@@ -27,6 +27,15 @@ The survey (chapter 17) reads every installed `SKILL.md` whose front matter name
 | learn | `deslop` | the clean-up pass on model-written text and code before it is kept | none |
 | any | the language and database packs (`go`, `database`, `frontend`, `llm`) | the conventions the implementers follow and the review agents the reviewers can delegate to | the project's own conventions; the method's reviewers alone |
 
+Two optional bindings reach outside the library, to plugins from the official catalog, under the same rule:
+
+| Phase | Plugin | What it supplies when enabled | When absent |
+|---|---|---|---|
+| plan-increment | `feature-dev` (Anthropic): the `code-architect` agent | a codebase-grounded implementation blueprint for one slice: patterns found, files to touch, data flow, build sequence | the method's explorers write the surface map |
+| design | `system-design-skills` (community): the divide-and-conquer pack | deep-dive recipes for capacity, caching, consistency, resilience and messaging when a milestone is scale-heavy | the architect's own procedure (chapter 14) |
+
+The Anthropic knowledge-work "Engineering" plugin's `architecture` and `system-design` skills were reviewed on 2026-10-13 (`docs/design/2026-10-13-anthropic-engineering-plugins-review.md`); their structure is folded into the architect's procedure and the decisions' options table rather than bound, because they carry no project grounding of their own.
+
 Two rules keep the binding cheap. A phase skill names the library skill and the section it relies on; it never restates its content. When a library skill is absent the phase still runs, with the fallback in the last column, and the survey keeps recommending the pack until it is installed or the owner records a decision not to.
 
 ## Versions

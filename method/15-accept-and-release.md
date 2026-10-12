@@ -24,8 +24,9 @@ The **release slice** carries the checklist, each item a `kind: release` row:
 | **T5 rehearsal** | deploy to the isolated environment, run the smoke and the milestone's scenario subset there, record the log |
 | security review | the threat models of touched surfaces are current; the named-risk findings are closed |
 | approvals | each approval is a D entry (money, legal, data) |
+| notice | on-call, or the owner in the lite profile, knows the window and the rollback trigger before the deploy |
 | the push | through the one script that refuses anything but the integration branch and never forces |
-| deploy | human act per environment, prepared command, verification by name |
+| deploy | human act per environment, prepared command, verification by name; canary first where the environment offers one |
 | post-release verification | the probes are green for the agreed window; the release is recorded in `MILESTONES.md` |
 | announcement | human act |
 

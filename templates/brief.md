@@ -7,7 +7,7 @@
 3. Contract pins (file, SHA)
 4. Reuse map (package or function, one line each)
 5. Out of scope and held (with reasons)
-6. Verification (exact commands with absolute paths; the end-to-end test name)
+6. Verification (exact commands with absolute paths; the end-to-end test name; test type per component: unit for logic, integration for adapters, contract for consumers, end-to-end for the scenario)
 7. Decisions already made (STATE.md class B lines; OWNER-DECISIONS ids)
 8. Stop conditions (when to return BLOCKED instead of guessing)
 

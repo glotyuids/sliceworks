@@ -11,7 +11,8 @@
 | T5 rehearsal | deploy to isolated; smoke and scenario subset green; log path | | |
 | security review | threat models current; named-risk findings closed | | |
 | approvals | D entries for money, legal, data | | |
+| notice | on-call (or the owner, in the lite profile) notified of the window and the rollback trigger | | |
 | push | the one push script | | |
-| deploy | human act per environment; prepared command; verification by name | | |
+| deploy | human act per environment; prepared command; verification by name; canary first where the environment offers one | | |
 | post-release verification | probes green for <window> | | |
 | announcement | human act | | |

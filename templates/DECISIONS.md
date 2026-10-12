@@ -9,6 +9,11 @@ Precedence when documents disagree: active decisions, then accepted specs, then 
 ### D-001 · <title>
 - <date> · <origin: round 1 | review slice-04 | owner answer | retrospective 0> · class <A1 | A2 | M | B> · **<status>** · veto by <date>
 - Decision: <one paragraph>
+- Options considered (A2 and B): 
+  | option | complexity | cost | scalability | team familiarity | operational impact | migration risk | verdict |
+  |---|---|---|---|---|---|---|---|
+  | <chosen> | | | | | | | chosen |
+  | <alternative> | | | | | | | lost because <reason> |
 - Default applied and consequence of reversing: <for A2 and B>
 - Consequences to verify: <what must be checked before this is treated as settled>
 

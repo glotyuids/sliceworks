@@ -66,7 +66,7 @@ A product moves through named **milestones** (MVP is one name among others). Eac
 
 ## Status
 
-0.4.0: bound to the skills library; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.4.1: bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

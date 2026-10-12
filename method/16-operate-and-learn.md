@@ -13,7 +13,7 @@
 - **Evaluation suites**: `evals/<suite>/` with a pinned corpus, graders, a threshold, and a budget in tokens and money; every run writes a verdict file; an `eval` row's check is that the latest verdict exists, is within budget and at or above the threshold. Prevents: quality claims without a corpus; paid runs without a cap.
 - **The money ledger**: `metrics/money.jsonl`, one entry per paid run (`at, event, amount, currency, authorization, run, note`), against an authorization recorded as a D entry. The money guard refuses a command the configuration marks as paid when the ledger's sum for the authorization has reached the cap. Prevents: an autonomous run spending money it was not given.
 - **Metrics review** against the milestone's success metrics, once per increment or per release: by script where the metric is a number, by a bounded reviewer where it is a judgment. The result is recorded in `MILESTONES.md`; the milestone closes when its metrics are measured, whatever they say.
-- **The feedback register**: `FEEDBACK.md`, candidates with evidence (a digest, a metric, an incident, an owner note), not yet features. The next milestone's Discover reads it first. Prevents: feedback that becomes a feature with no evidence, or evaporates.
+- **The feedback register**: `FEEDBACK.md`, candidates with evidence (a digest, a metric, an incident, an owner note), not yet features. A debt candidate carries a priority, (impact + risk) × (6 − effort) with each term scored 1 to 5, so the retrospective can thin by number rather than by mood. The next milestone's Discover reads it first. Prevents: feedback that becomes a feature with no evidence, or evaporates.
 
 ## Learning about the process
 

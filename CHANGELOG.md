@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Design reasoning (review of 2026-10-13, `docs/design/2026-10-13-anthropic-engineering-plugins-review.md`): the architect profile gains a six-step procedure before the artifacts (requirements, map, options with a dimension table, deep dive, scale and reliability, trade-offs); class A2 and B decisions carry an Options considered table; the release checklist gains the notice and canary rows; briefs name the test type per component; debt candidates in the feedback register carry a priority; chapter 18 lists two optional bindings to official-catalog plugins (`feature-dev:code-architect`, `system-design-skills`).
+
 ## 0.4.0
 
 - Binding with the `engineering-skills` library (method chapter 18): `sliceworks` is listed in the library's marketplace and installed from this repository; the survey detects the library skills a project has installed, by pack and version, recommends packs for the stack and phases, and reports per phase which library skills the phase skills will call; `adopt` offers the recommended packs through the library's own install procedure; `design`, `release`, `operate` and `learn` name the library skills they rely on and their fallbacks.
