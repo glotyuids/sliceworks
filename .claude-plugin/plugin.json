@@ -1,0 +1,23 @@
+{
+  "name": "sliceworks",
+  "version": "0.3.0",
+  "description": "An autonomous development life cycle for AI coding agents: milestones with ten phases from spark to learn, one ledger of checkable rows, a decisions ledger with classes and veto windows, worktree-isolated slice implementers behind frozen contracts, deterministic verification tiers, independent review, budget and money guards, and a human only for the acts a machine may not perform.",
+  "author": {
+    "name": "glotyuids",
+    "url": "https://github.com/glotyuids/sliceworks"
+  },
+  "homepage": "https://github.com/glotyuids/sliceworks",
+  "repository": "https://github.com/glotyuids/sliceworks",
+  "license": "Apache-2.0",
+  "keywords": [
+    "process",
+    "sdlc",
+    "lifecycle",
+    "milestones",
+    "agents",
+    "coordinator",
+    "slices",
+    "verification",
+    "dashboard"
+  ]
+}

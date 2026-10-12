@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/usage-reading.schema.json",
+  "title": "sliceworks usage reading",
+  "description": "One line of metrics/usage.jsonl. Timestamps are ISO 8601 strings in UTC; never epoch integers (both runtimes must write the same shape).",
+  "type": "object",
+  "required": ["at", "event", "runtime", "weekly_pct"],
+  "properties": {
+    "at": {"type": "string", "format": "date-time"},
+    "event": {"type": "string", "enum": ["setup", "resume", "dispatch", "merge", "tick", "manual", "milestone"]},
+    "runtime": {"type": "string"},
+    "five_hour_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "five_hour_reset": {"type": ["string", "null"], "format": "date-time"},
+    "weekly_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "weekly_reset": {"type": ["string", "null"], "format": "date-time"},
+    "weekly_model_pct": {"type": ["number", "null"]},
+    "weekly_model": {"type": ["string", "null"]},
+    "extra_usage": {"type": ["object", "null"], "properties": {"enabled": {"type": "boolean"}}}
+  }
+}

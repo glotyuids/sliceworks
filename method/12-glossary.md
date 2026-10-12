@@ -1,0 +1,28 @@
+# 12. Glossary
+
+- **Slice**: one vertical unit of work owned by one implementer, described by a brief of at most 150 lines, ending in an end-to-end test.
+- **Increment**: an ordered set of slices that ends in an automated demo run and a retrospective.
+- **Milestone**: a product transition at which the full suite runs and a pull request is opened for the owner's asynchronous reading.
+- **Candidate**: a slice branch at a SHA with a green T1 log, offered for review.
+- **Integration branch**: the single branch the coordinator merges into.
+- **Contract**: the frozen interface between slices: paths or signatures, data shapes, state transitions, fixtures.
+- **Ledger**: `FEATURES.json`, the rows with pass flags and evidence that define progress.
+- **Class A1, A2, B, C decision**: human-only act; owner-vetoable default applied by the coordinator; coordinator technical decision; implementer decision.
+- **T0 to T4**: the verification tiers.
+- **Budget box**: a slice's token allowance in window points.
+- **Friction note**: a one-line `FRICTION:` entry in `PROGRESS.md`.
+- **Component**: a rule or artifact that names the failure it prevents.
+- **Engineering-complete**: the autonomous stop condition.
+- **Kill switch**: the `STOP` file in the state directory.
+- **Material boundary**: a surface whose first implementation triggers a named-risk review.
+- **Profile**: `lite`, `full` or `dual`, the set of components a project runs.
+- **Milestone**: a named goal with a promise, success metrics, exit criteria and gate families; made of increments in its Build phase. MVP is a milestone name.
+- **Phase**: Spark, Discover, Decide, Design, Plan, Build, Accept, Release, Operate, Learn.
+- **Release**: a deployment event to a named environment, with its checklist rows.
+- **Round**: one frozen research-and-verification run with a claim register.
+- **Gate family**: a class of acts beyond engineering that closes a milestone (owner, legal, provider, operations, security, data).
+- **Row kind**: what a ledger row's check proves: scenario, criterion, claim, experiment, decision, spec, gate, release, probe, eval.
+- **Survey**: the deterministic inventory of a project (stack, process systems, agent configuration, phase coverage) that the dispatcher reads.
+- **Importer**: a reader of one existing format (Spec Kit, OpenSpec, decision records, plans, tests, boards) that proposes the method's artifacts.
+- **Intake**: the pipeline a chat request passes through: capture, business analysis, system analysis, scenario adaptation, decisions, placement.
+- **Money ledger**: `metrics/money.jsonl`, paid runs against an authorization, enforced by the money guard.

@@ -1,0 +1,4 @@
+
+## Development process: sliceworks
+
+This project runs under the sliceworks life cycle (plugin `sliceworks`, version <version>). State lives in `<state-dir>/`: `STATE.md`, `FEATURES.json`, `BACKLOG.md`, `PROGRESS.md`, `OWNER-DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `DECISIONS.md`, `MILESTONES.md`, `SCENARIOS.json`, `ARCHITECTURE.md`, `INDEX.md`. Start or resume with the `resume` skill or `<state-dir>/START.md`. Roles: one coordinator session on `<integration branch>`; slice implementers in their own worktrees; read-only reviewers. Tiers: `<verify command> t0|t1|t2|t3` (T0 under two minutes on every turn, T1 before a candidate, T2 after a merge, T3 at milestones); environment: `<init command>`; demo: `<demo command> <n>`. The rules for every agent are in `.claude/rules/sliceworks.md`.

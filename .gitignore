@@ -1,0 +1,11 @@
+# local state of a run never belongs to the package
+.run/
+outputs/
+*.local.md
+.claude/settings.local.json
+!.claude/CLAUDE.md
+__pycache__/
+*.pyc
+.DS_Store
+evals/results/
+tests/fixture-repo/.git/

@@ -1,0 +1,4 @@
+# Installed by the coordinator into the implementer's trusted worktree only.
+prefix_rule(pattern = ["git", ["push", "merge", "switch", "worktree"]], decision = "forbidden", justification = "Implementers commit only; return CANDIDATE to the coordinator.")
+prefix_rule(pattern = ["git", "rebase", "-i"], decision = "forbidden", justification = "Implementers do not rewrite history interactively.")
+prefix_rule(pattern = [["pkill", "killall"]], decision = "forbidden", justification = "Stop only your own process by PID.")

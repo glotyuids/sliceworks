@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/scenario.schema.json",
+  "title": "sliceworks user scenario",
+  "description": "One entry of SCENARIOS.json: a user journey step above the ledger rows. A scenario of a milestone must prove at least one row before the milestone is accepting.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "stage",
+    "milestone",
+    "proves"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "description": "journey stage label, e.g. 'A Set up'"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "customer segments or user groups"
+    },
+    "milestone": {
+      "type": "string",
+      "description": "MILESTONES.md id, e.g. M1"
+    },
+    "increment": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "proves": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "FEATURES.json row ids that prove this scenario"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "progress",
+        "proven",
+        "thinned"
+      ]
+    }
+  }
+}

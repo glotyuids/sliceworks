@@ -1,0 +1,4 @@
+[
+  {"id": "A1", "title": "Set up the first project from a brief", "stage": "A Set up", "roles": ["owner"], "segments": ["solo", "team"], "milestone": "M1", "increment": 0, "proves": ["AC-001"], "status": "todo"},
+  {"id": "B1", "title": "Invite a second user", "stage": "B Bring in", "roles": ["owner", "member"], "segments": ["team"], "milestone": "M2", "increment": null, "proves": [], "status": "todo"}
+]

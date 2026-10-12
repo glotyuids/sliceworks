@@ -1,0 +1,23 @@
+# sliceworks 0.2.0: project defaults for the Codex runtime (dual profile). Role agents in .codex/agents are
+# generated from the plugin's agents by the sync script; hooks go through the shim in scripts/runtimes/codex.
+model = "<coordinator model>"
+model_reasoning_effort = "high"
+
+[agents]
+max_threads = 4
+max_depth = 1
+default_subagent_model = "<implementer model>"
+default_subagent_reasoning_effort = "high"
+
+[[hooks.PreToolUse]]
+matcher = "Bash|apply_patch|Edit|Write|spawn_agent"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = 'sh "$(git rev-parse --path-format=absolute --git-common-dir)/../scripts/runtimes/codex/session-guard.sh" pre'
+timeout = 30
+
+[[hooks.Stop]]
+[[hooks.Stop.hooks]]
+type = "command"
+command = 'sh "$(git rev-parse --path-format=absolute --git-common-dir)/../scripts/runtimes/codex/session-guard.sh" stop'
+timeout = 600

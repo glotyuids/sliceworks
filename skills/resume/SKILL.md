@@ -1,0 +1,23 @@
+---
+name: resume
+description: Start or resume the sliceworks coordinator in a project that adopted the method - read the recovery file and the state files, record a usage reading, apply the budget holds, re-dispatch slices whose implementer is not running, restart the background timers, and set the increment goal. Use when the user says "resume the coordinator", "continue the run", "pick up where the run stopped", "restart after the compaction", or pastes the START page's resume prompt.
+license: Apache-2.0
+metadata:
+  source: glotyuids/sliceworks
+  version: 0.2.0
+---
+
+# Resume the coordinator
+
+Read `.sliceworks/config.env` for the paths below. If the kill switch file exists, stop and say so.
+
+1. **Recover.** Read `.run/coordinator-session.md` if it exists (agent ids of running implementers and reviewers, background task ids, message counts, next actions), then `<state-dir>/START.md`, `STATE.md`, the tail of `PROGRESS.md`, and `NEEDS-HUMAN.md`. Do not read logs yourself; use explorers.
+2. **Record usage.** Read the host's usage and append it to `<state-dir>/metrics/usage.jsonl` with the recording script (event `resume`).
+3. **Apply holds.** At or above the dispatch hold do not dispatch anything. At or above the stop line stop every running implementer, write the hold into `STATE.md`, start the hold timer in the background and end the turn; when its completion wakes you, record a fresh reading and continue from step 1.
+4. **Re-dispatch.** For every slice recorded `active` or `repair` whose implementer is not running, dispatch the `slice-implementer` agent from its branch with its brief and the `PROGRESS.md` tail, with the dispatch prompt of `method/07-communication.md` (`BRIEF`). Remove any `.blocked` marker first.
+5. **Keep one ready brief per writer.** Run the ready detector; write briefs with the `brief` skill for slices that could start; dispatch into free writer slots, preferring the fewest shared hot areas.
+6. **Background timers.** Start the dashboard loop (always) and the wake timer (while any slice is active) with `run_in_background`; when the wake timer completes, record a reading, act on its `STALL`, `STALE` and `READY` lines, and restart it.
+7. **Update the recovery file** at every dispatch, merge and before an expected compaction.
+8. **Goal.** Set the goal for the current increment: every ledger row of the increment is `passes: true` or `blocked_on_human`, the demo command passed, and the retrospective file exists. When the milestone's last increment closes, run the `accept` skill instead of starting another increment.
+
+On each `CANDIDATE`: read the T1 result line; spawn `code-reviewer` (and `named-risk-reviewer` when the brief says material boundary: yes); relay `FINDINGS`; merge by SHA with `git merge --no-ff`; run T2 in the background; flip the rows with evidence; record state; re-dispatch. Keep chat replies to a line or two; the dashboard carries progress.

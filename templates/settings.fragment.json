@@ -1,0 +1,24 @@
+{
+  "_comment": "sliceworks 0.2.0: keys the adopt skill merges into the project's .claude/settings.json. Hooks are NOT here; the plugin provides them (a copy would run twice). Replace the model ids and the allow list with the project's own.",
+  "model": "<coordinator model id>",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "<implementer model id>",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "2",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "0"
+  },
+  "subagentPromptCacheTtl": "1h",
+  "autoContinueAtUsageLimit": true,
+  "worktree": { "baseRef": "head" },
+  "permissions": {
+    "allow": [
+      "Bash(git add *)", "Bash(git commit *)", "Bash(git rebase *)", "Bash(git log *)", "Bash(git diff *)", "Bash(git status*)",
+      "Bash(git show *)", "Bash(git merge-base *)", "Bash(git rev-parse *)", "Bash(git merge --no-ff *)", "Bash(git revert *)",
+      "Bash(<build command> *)", "Bash(<test command> *)", "Bash(<lint command> *)", "Bash(<verify command> *)"
+    ],
+    "deny": [
+      "Bash(git push*)", "Bash(kubectl *)", "Bash(helm *)", "Bash(terraform *)", "Bash(ansible*)", "Bash(docker push*)",
+      "Read(**/*.tfvars)", "Read(**/.secrets*)", "Read(**/*.secret*)"
+    ]
+  },
+  "enabledPlugins": { "sliceworks@engineering-skills": true }
+}

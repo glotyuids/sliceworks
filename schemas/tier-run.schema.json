@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/tier-run.schema.json",
+  "title": "sliceworks tier run",
+  "description": "One line of metrics/tiers.jsonl, written by the tier runner at the end of every run.",
+  "type": "object",
+  "required": ["at", "tier", "slice", "head", "result", "seconds", "log"],
+  "properties": {
+    "at": {"type": "string", "format": "date-time"},
+    "tier": {"type": "string", "enum": ["t0", "t1", "t2", "t3", "t4"]},
+    "slice": {"type": "string"},
+    "head": {"type": "string"},
+    "result": {"type": "string", "enum": ["pass", "fail", "NOT_RUN"]},
+    "seconds": {"type": "integer", "minimum": 0},
+    "steps": {"type": "integer", "minimum": 0},
+    "fails": {"type": "string", "description": "space-joined step labels that failed"},
+    "log": {"type": "string"},
+    "interrupted": {"type": "boolean"}
+  }
+}

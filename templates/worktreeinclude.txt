@@ -1,0 +1,2 @@
+# sliceworks 0.2.0: files a new worktree must inherit (one path per line); install as .worktreeinclude.
+# Example: the local environment file with synthetic credentials.

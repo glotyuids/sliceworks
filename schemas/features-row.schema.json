@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/features-row.schema.json",
+  "title": "sliceworks feature-ledger row",
+  "description": "One row of FEATURES.json (an array of rows). One ledger, many kinds: kind says what the check proves (method chapter 0). Agents may change only passes and evidence. Removing or weakening a check is forbidden.",
+  "type": "object",
+  "required": [
+    "id",
+    "increment",
+    "slice",
+    "title",
+    "cwd",
+    "check",
+    "passes",
+    "evidence",
+    "human_act",
+    "tasks"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9-]*$"
+    },
+    "increment": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "the increment within the milestone's Build phase; null for rows of other phases"
+    },
+    "slice": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cwd": {
+      "type": "string",
+      "description": "directory, relative to the repository root, from which check runs with sh -c"
+    },
+    "check": {
+      "type": "string",
+      "minLength": 1,
+      "description": "a command that exits non-zero unless the named test actually ran and passed"
+    },
+    "passes": {
+      "type": "boolean"
+    },
+    "evidence": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "required": [
+            "test",
+            "log",
+            "at",
+            "head"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "test": {
+              "type": "string"
+            },
+            "log": {
+              "type": "string"
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "head": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "human_act": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "the NEEDS-HUMAN.md item id this row depends on"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kind": {
+      "type": "string",
+      "default": "scenario",
+      "enum": [
+        "scenario",
+        "criterion",
+        "claim",
+        "experiment",
+        "decision",
+        "spec",
+        "gate",
+        "release",
+        "probe",
+        "eval"
+      ],
+      "description": "what the check proves; absent means scenario"
+    },
+    "milestone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "the milestone id in MILESTONES.md this row belongs to; null for process rows"
+    }
+  }
+}

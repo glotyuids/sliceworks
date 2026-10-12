@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/money-entry.schema.json",
+  "title": "sliceworks money ledger entry",
+  "description": "One line of metrics/money.jsonl: a paid run recorded against an authorization decision. The money guard sums amount per authorization against the cap.",
+  "type": "object",
+  "required": [
+    "at",
+    "event",
+    "amount",
+    "currency",
+    "authorization"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "eval",
+        "provider",
+        "cloud",
+        "other"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "authorization": {
+      "type": "string",
+      "pattern": "^D-[0-9]+$",
+      "description": "the D entry that authorized the spend and its cap"
+    },
+    "run": {
+      "type": "string",
+      "description": "what was paid for, e.g. evals/<suite>/<ts>"
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}
