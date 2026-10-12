@@ -4,7 +4,7 @@ description: Run the one kickoff session of a sliceworks run with the owner - sc
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Kickoff

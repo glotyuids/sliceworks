@@ -4,7 +4,7 @@ description: Write or update the sliceworks design artifacts from decisions and 
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Design: the acceptance contract and the design surfaces
@@ -18,4 +18,4 @@ Method: `method/14-design-and-plan.md`. Templates: `ARCHITECTURE.md`, `specs-REA
 5. **Milestones.** `MILESTONES.md`: the current milestone's promise, success metrics, exit criteria, increments with exit demos, gate families with rows and owners. The owner approves the section once (a D entry).
 6. **Threat models.** One page per material surface in `SW_MATERIAL_SURFACES`; name the tests that prove each invariant, or "none yet" as an open H.
 7. **Index.** Every living document in `INDEX.md` with status and last-reviewed date.
-8. **Design review.** A read-only reviewer (the skills library's `review-plan` where installed) tests the design against the repository and the rounds along four dimensions and ranks findings; fix H and M before Plan.
+8. **Design review.** When the library's `review-plan` skill is installed, run it as written: evidence from the repository and the rounds, the four dimensions (correctness and logic, architecture and principles, missing parts, ambiguity), a ranked findings table, open questions batched at the end. When it is absent, a read-only reviewer runs a reduced review under the same four headings. Fix H and M before Plan. Decision records follow the library's `documentation-standards` where installed.

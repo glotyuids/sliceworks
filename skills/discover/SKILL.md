@@ -4,7 +4,7 @@ description: Open, run and close a sliceworks research round - fix the questions
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Discover: run a research round

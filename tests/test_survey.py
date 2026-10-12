@@ -80,3 +80,32 @@ class Survey(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LibraryBinding(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.root = pathlib.Path(self.tmp.name)
+        (self.root / ".sliceworks").mkdir(); (self.root / ".sliceworks/config.env").write_text("SW_STATE_DIR=docs/process\nSW_PHASES=\"design plan build release operate\"\n")
+        (self.root / "docs/process").mkdir(parents=True); (self.root / "docs/process/SURVEY.md").write_text("x")
+        (self.root / "go.mod").write_text("module x\n")
+        for base in (".claude/skills", ".agents/skills"):
+            for name, src in (("review-plan", "glotyuids/engineering-skills"), ("git-workflow", "glotyuids/engineering-skills"), ("my-own", "me/mine")):
+                d = self.root / base / name; d.mkdir(parents=True)
+                d.joinpath("SKILL.md").write_text(f"---\nname: {name}\ndescription: x\nmetadata:\n  source: {src}\n  version: 0.1.{'1' if name == 'review-plan' else '0'}\n---\nbody\n")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_library_skills_detected_with_versions_and_locations(self):
+        rep = json.loads(run("--root", str(self.root), "--json"))["library"]
+        self.assertEqual(sorted(rep["skills"]), ["git-workflow", "review-plan"])
+        self.assertEqual(rep["skills"]["review-plan"]["version"], "0.1.1"); self.assertEqual(sorted(rep["skills"]["review-plan"]["locations"]), [".agents/skills", ".claude/skills"])
+        self.assertEqual(sorted(rep["packs"]), ["process"]); self.assertIn("incident-response", rep["packs"]["process"]["missing"])
+
+    def test_recommendations_follow_stack_and_phases(self):
+        rep = json.loads(run("--root", str(self.root), "--json"))["library"]
+        self.assertEqual(rep["recommended_packs"], ["core", "database", "go", "infra"])
+        self.assertEqual(rep["phase_uses"]["design"]["present"], ["review-plan"]); self.assertEqual(rep["phase_uses"]["operate"]["present"], [])
+
+    def test_markdown_has_library_section(self):
+        self.assertIn("## Skills library (engineering-skills)", run("--root", str(self.root), "--markdown"))

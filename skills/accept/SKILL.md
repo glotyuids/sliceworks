@@ -4,7 +4,7 @@ description: Close a sliceworks milestone's engineering and prepare the owner's 
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Accept a milestone

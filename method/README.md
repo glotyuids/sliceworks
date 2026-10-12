@@ -20,5 +20,6 @@ This is the process, generic. Project values (paths, branch names, tier commands
 15. [Accept and Release](15-accept-and-release.md)
 16. [Operate and Learn](16-operate-and-learn.md)
 17. [Entry and intake](17-entry-and-intake.md)
+18. [The skills library](18-skills-library.md)
 
 Chapters 1 to 12 are the Build phase of one milestone; chapter 0 places it in the life cycle and chapters 13 to 16 cover the other phases.

@@ -24,5 +24,6 @@
 - **Row kind**: what a ledger row's check proves: scenario, criterion, claim, experiment, decision, spec, gate, release, probe, eval.
 - **Survey**: the deterministic inventory of a project (stack, process systems, agent configuration, phase coverage) that the dispatcher reads.
 - **Importer**: a reader of one existing format (Spec Kit, OpenSpec, decision records, plans, tests, boards) that proposes the method's artifacts.
+- **Skills library**: `engineering-skills`, the owner's packs of Agent Skills; the method calls them by name per phase and never restates them.
 - **Intake**: the pipeline a chat request passes through: capture, business analysis, system analysis, scenario adaptation, decisions, placement.
 - **Money ledger**: `metrics/money.jsonl`, paid runs against an authorization, enforced by the money guard.

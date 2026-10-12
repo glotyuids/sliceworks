@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sliceworks 0.3.0. Project survey and phase dispatcher (method chapter 17).
+# sliceworks 0.4.0. Project survey and phase dispatcher (method chapter 17).
 #   survey.py --root <repo> [--json | --markdown] : what the project has, mapped to the phases' artifacts
 #   survey.py --root <repo> --next                : the next skill to run and why (NEXT=<skill> REASON=<text>)
 # Detection only; nothing is written. Standard library only.
@@ -105,6 +105,71 @@ def detect_process_systems(root):
     s["readme"] = exists(root, "README.md")
     s["changelog"] = exists(root, "CHANGELOG.md")
     return s
+
+
+LIBRARY = "glotyuids/engineering-skills"
+LIBRARY_PACKS = {  # pack -> skills, as the library's manifest lists them (kept in sync by hand; the library is the source)
+    "core": ["bootstrap-project"],
+    "process": ["git-workflow", "documentation-standards", "deslop", "review-plan", "integration-testing", "incident-response", "kanban-md", "security-guidelines"],
+    "infra": ["cicd-build-deploy", "terraform-conventions", "ansible-deploy", "kubernetes-helm", "makefile-conventions", "secrets-management"],
+    "cloud-yandex": ["yandex-cloud"],
+    "go": ["go-conventions", "new-microservice", "api-and-events", "observability-and-quality"],
+    "database": ["postgres-patterns", "database-migrations"],
+    "frontend": ["react-conventions", "design-system-authoring", "i18n-conventions", "ui-test-playwright"],
+    "llm": ["llm-pipeline-rules", "mcp-server-authoring", "skill-authoring"],
+    "writing": ["purposeful-text-writing", "writing-honesty-gates", "cover-letter-craft", "review-cover-letter"],
+    "lang-ru": ["ru-ui-strings", "ru-en-tone-transfer", "ru-market-job-application-norms", "bilingual-product-architecture"],
+}
+PHASE_USES = {  # phase -> library skills the sliceworks phase skills call when present
+    "adopt": ["bootstrap-project"], "design": ["review-plan", "documentation-standards"], "plan": ["kanban-md"],
+    "build": ["git-workflow", "integration-testing", "security-guidelines"], "release": ["cicd-build-deploy", "secrets-management", "documentation-standards"],
+    "operate": ["incident-response", "documentation-standards"], "learn": ["deslop"],
+}
+
+
+def detect_library_skills(root):
+    """Skills installed from the engineering-skills library, by name, with version and where they live."""
+    found = {}
+    for base in (".claude/skills", ".agents/skills", ".cursor/skills"):
+        for sk in root.glob(f"{base}/*/SKILL.md"):
+            try:
+                head = sk.read_text(errors="ignore")[:4000]
+            except Exception:
+                continue
+            if not head.startswith("---"):
+                continue
+            fm = head.split("---", 2)[1]
+            if f"source: {LIBRARY}" not in fm:
+                continue
+            m = re.search(r"^\s*version:\s*(\S+)", fm, re.M)
+            name = sk.parent.name
+            found.setdefault(name, {"version": m.group(1) if m else None, "locations": []})["locations"].append(base)
+    packs = {}
+    for pack, skills in LIBRARY_PACKS.items():
+        have = [s for s in skills if s in found]
+        if have:
+            packs[pack] = {"installed": have, "missing": [s for s in skills if s not in found]}
+    return {"skills": found, "packs": packs}
+
+
+def recommend_packs(stack, library, phases):
+    """Packs worth installing for this stack and these phases, minus the ones already (partly) installed."""
+    want = {"core", "process"}
+    langs = set(stack.get("languages", []))
+    if "go" in langs: want.add("go")
+    if "javascript" in langs: want.add("frontend")
+    if {"release", "operate"} & set(phases): want.add("infra")
+    manifests = set(stack.get("manifests", []))
+    if "go.mod" in manifests or "pyproject.toml" in manifests: want.add("database")
+    return sorted(w for w in want if w not in library["packs"])
+
+
+def library_uses(library):
+    """Per phase: which of the library skills the phase skills would call are present, and which are absent."""
+    out = {}
+    for phase, skills in PHASE_USES.items():
+        out[phase] = {"present": [s for s in skills if s in library["skills"]], "absent": [s for s in skills if s not in library["skills"]]}
+    return out
 
 
 def detect_agent_config(root):
@@ -215,20 +280,35 @@ def main(argv=None):
     cfg = read_config(root)
     stack = detect_stack(root); systems = detect_process_systems(root); agent_cfg = detect_agent_config(root)
     cov = phase_coverage(root, cfg); ledger = ledger_summary(root, cfg)
+    library = detect_library_skills(root)
+    phases = ((cfg or {}).get("SW_PHASES") or "spark discover decide design plan build accept release operate learn").split()
+    library["recommended_packs"] = recommend_packs(stack, library, phases); library["phase_uses"] = library_uses(library)
     survey_fresh = False
     if cfg:
         sp = root / cfg.get("SW_STATE_DIR", "docs/process") / "SURVEY.md"
         survey_fresh = sp.exists() and sp.stat().st_mtime >= (root / ".sliceworks" / "config.env").stat().st_mtime
     nxt, reason = decide_next(root, cfg, cov, ledger, systems, agent_cfg, survey_fresh)
-    report = {"root": str(root), "adopted": cfg is not None, "profile": (cfg or {}).get("SW_PROFILE"), "stack": stack, "process_systems": systems, "agent_config": agent_cfg, "phase_coverage": cov, "ledger": ledger, "next": {"skill": nxt, "reason": reason}}
+    report = {"root": str(root), "adopted": cfg is not None, "profile": (cfg or {}).get("SW_PROFILE"), "stack": stack, "process_systems": systems, "agent_config": agent_cfg, "library": library, "phase_coverage": cov, "ledger": ledger, "next": {"skill": nxt, "reason": reason}}
     if a.next:
         print(f"NEXT={nxt} REASON={reason}")
         return 0
     if a.json or not a.markdown:
         print(json.dumps(report, indent=2))
         return 0
-    lines = [f"# Survey of {root.name}", "", f"Adopted: {'yes, profile ' + str(report['profile']) if cfg else 'no'}. Next: **{nxt}** ({reason}).", "", "## Stack", f"- languages: {', '.join(stack['languages']) or 'none detected'}; manifests: {', '.join(stack['manifests']) or 'none'}", f"- commands: " + "; ".join(f"{k}: {', '.join(v[:12])}" for k, v in stack['commands'].items()) if stack['commands'] else "- commands: none detected", f"- CI: {', '.join(stack['ci']) or 'none'}; test files: {stack['test_files']}; end-to-end tests named: {len(stack['e2e_test_names'])}", "", "## Process systems"]
+    lines = [f"# Survey of {root.name}", "",
+             f"Adopted: {'yes, profile ' + str(report['profile']) if cfg else 'no'}. Next: **{nxt}** ({reason}).", "",
+             "## Stack",
+             f"- languages: {', '.join(stack['languages']) or 'none detected'}; manifests: {', '.join(stack['manifests']) or 'none'}",
+             ("- commands: " + "; ".join(f"{k}: {', '.join(v[:12])}" for k, v in stack['commands'].items())) if stack['commands'] else "- commands: none detected",
+             f"- CI: {', '.join(stack['ci']) or 'none'}; test files: {stack['test_files']}; end-to-end tests named: {len(stack['e2e_test_names'])}", "",
+             "## Skills library (engineering-skills)",
+             f"- installed skills: {len(library['skills'])} in packs {', '.join(library['packs']) or 'none'}",
+             f"- recommended packs to add: {', '.join(library['recommended_packs']) or 'none'}",
+             "- phase bindings: " + "; ".join(f"{ph}: {', '.join(u['present']) or 'none'} (absent: {', '.join(u['absent']) or 'none'})" for ph, u in library['phase_uses'].items()), "",
+             "## Process systems"]
     sk = systems["spec_kit"]; osp = systems["openspec"]
+    lines += ["", "## Skills library (engineering-skills)", f"- installed skills: {len(library['skills'])} in packs {', '.join(library['packs']) or 'none'}", f"- recommended packs to add: {', '.join(library['recommended_packs']) or 'none'}", "- phase bindings: " + "; ".join(f"{ph}: {', '.join(u['present']) or 'none'} (absent: {', '.join(u['absent']) or 'none'})" for ph, u in library['phase_uses'].items())]
+    lines += ["", "## Process systems"]
     lines += [f"- Spec Kit: {'present' if sk['present'] else 'absent'}; constitution: {sk['constitution']}; features: {len(sk['features'])}", f"- OpenSpec: {'present' if osp['present'] else 'absent'}; specs: {len(osp['specs'])}; open changes: {len(osp['changes'])}", f"- ADRs: {systems['adr']['count']} in {', '.join(systems['adr']['dirs']) or 'no directory'}; decisions log: {', '.join(systems['decisions_log']) or 'none'}", f"- plans or roadmaps: {len(systems['plans'])}; architecture document: {', '.join(systems['architecture_doc']) or 'none'}; kanban-md: {systems['kanban_md']['present']}; runbooks: {systems['runbooks']}", "", "## Agent configuration", f"- CLAUDE.md: {agent_cfg['claude_md']}; AGENTS.md: {agent_cfg['agents_md']}; rules: {len(agent_cfg['claude_rules'])}; agents: {len(agent_cfg['claude_agents'])}; skills: {len(agent_cfg['claude_skills'])} (.claude) + {len(agent_cfg['agents_skills'])} (.agents)", f"- hooks in settings: {agent_cfg['settings_hooks']}; plugins: {', '.join(agent_cfg['enabled_plugins']) or 'none'}; MCP: {agent_cfg['mcp']}; memory: {agent_cfg['memory'] or 'none'}; worktrees: {agent_cfg['worktrees']}", "", "## Phase coverage", "| phase | status | have | missing |", "|---|---|---|---|"]
     for ph, c in cov.items():
         lines.append(f"| {ph} | {c['status']} | {', '.join(c['have']) or ''} | {', '.join(c['missing']) or ''} |")

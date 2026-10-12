@@ -46,3 +46,4 @@ Each component names the failure it prevents; the retrospective removes componen
 | importers (`prepare`) | re-authoring specifications, decisions and scenarios the project already has in another format |
 | the `start` dispatcher | starting the wrong phase; an owner who must know the method to begin |
 | the intake pipeline and `intake/<id>.md` | features entering by chat without analysis; analysis without a record |
+| the skills-library binding (survey detection, phase table, pack recommendations) | the life cycle restating engineering how-tos; a project running a phase without the skill that knows how |

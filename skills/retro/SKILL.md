@@ -4,7 +4,7 @@ description: Close an increment under sliceworks - run the demo, spawn the effic
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Close an increment

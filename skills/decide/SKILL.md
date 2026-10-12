@@ -4,7 +4,7 @@ description: Keep the sliceworks decisions ledger - turn open questions into Q e
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Decide: the decisions ledger

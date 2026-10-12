@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.3.0 (unreleased)
+## 0.4.0
+
+- Binding with the `engineering-skills` library (method chapter 18): `sliceworks` is listed in the library's marketplace and installed from this repository; the survey detects the library skills a project has installed, by pack and version, recommends packs for the stack and phases, and reports per phase which library skills the phase skills will call; `adopt` offers the recommended packs through the library's own install procedure; `design`, `release`, `operate` and `learn` name the library skills they rely on and their fallbacks.
+- The architect profile runs on `fable` at the highest effort.
+
+## 0.3.0
 
 - Entry and intake (method chapter 17): the entry sequence adopt → survey → prepare → start; `scripts/survey.py`, a deterministic inventory of a project (stack and commands, Spec Kit, OpenSpec, decision records, plans, architecture documents, boards, agent configuration, project memory, phase coverage) with `--next`, the dispatcher that names the next skill from the ledgers; importers in the `prepare` skill for Spec Kit, OpenSpec, decision records, plans, architecture documents, tests and boards; the `intake` pipeline for requests typed in chat (capture, business analysis, system analysis, scenario adaptation, decisions, placement) with `intake/<id>.md`.
 - Skills: `start`, `survey`, `prepare`, `intake`; `adopt` runs the survey first and ends by running `start`.

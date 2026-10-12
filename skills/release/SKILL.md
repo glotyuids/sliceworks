@@ -4,7 +4,7 @@ description: Ship a sliceworks milestone or hotfix through the release checklist
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Release
@@ -17,4 +17,5 @@ Method: `method/15-accept-and-release.md`. Template: `release.md`. Environments:
 4. **Push** through the one push script.
 5. **Human acts.** For each environment beyond isolated: the exact command, the expected verification by name, the rollback command; as `NEEDS-HUMAN.md` rows. Never run them.
 6. **Verify.** Probes green for the agreed window; record the release in `MILESTONES.md`; the announcement is a human act.
-7. **Hotfix path.** A `fix` slice reduces the checklist to the steps the change touches; nothing skips the tiers.
+7. **Library skills.** The pipeline steps follow the library's `cicd-build-deploy`, secrets follow `secrets-management`, the runbook follows the `documentation-standards` runbook template, all where installed (method chapter 18). A step no installed skill covers is a `TODO` row the owner performs with the prepared command.
+8. **Hotfix path.** A `fix` slice reduces the checklist to the steps the change touches; nothing skips the tiers.

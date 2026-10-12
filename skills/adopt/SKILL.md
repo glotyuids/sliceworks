@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.2.0
+  version: 0.4.0
 ---
 
 # Adopt sliceworks in a project
@@ -45,6 +45,10 @@ From `${CLAUDE_PLUGIN_ROOT}/templates/`, substituting the answers:
 - For `dual`: `.codex/config.toml` from `codex-config.toml`, and `.agents/skills/` copies of this plugin's skills.
 
 Stamp every written file with `# sliceworks <version>` (or the `metadata` block in Markdown front matter) so the `update` skill can detect drift.
+
+## Phase 3b, the skills library
+
+The survey lists the skills installed from `engineering-skills` and the packs it recommends for this stack and these phases (method chapter 18). Offer the recommended packs in the Phase 2 message; install the confirmed ones through the library's own procedure (its README's agent-followable section, or `scripts/install.sh` from a clone), never by copying skills yourself. Record declined packs as a `D` entry so the survey stops recommending them.
 
 ## Phase 4, self-test
 
