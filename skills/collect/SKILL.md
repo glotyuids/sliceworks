@@ -13,11 +13,13 @@ Method: `method/19-allocation-and-completion.md`. Script: `${CLAUDE_PLUGIN_ROOT}
 
 1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/collect.py" --root "$PWD"`. One line per open allocation, from evidence alone; the script writes nothing and sends nothing.
 2. Act on each state, without a message to the worker:
-   - `RUNNING`: ongoing work; a live test or a resource queue is not a stall. Do nothing.
+   - `RUNNING` or `QUEUED`: ongoing work; a live test or a wait in a resource queue is not a stall. Do nothing, and never start a duplicate writer.
+   - `CANDIDATE-UNVERIFIED`: the handoff claims a pass the log or the tiers row does not show; run the required gate yourself on the handoff head, or return the slice to repair with the discrepancy.
    - `DONE`: read the handoff, start the already-authorized next step (review, then merge), set the allocation `collected`.
    - `BLOCKED` or `HOLD`: read the handoff's blockers and the default the worker would apply; decide (class B) or route to the owner (A1); re-dispatch from the branch with a new allocation when unblocked.
    - `STALE-HANDOFF`: the worker committed after writing the handoff; read the branch log; if the worker is gone, treat the last commit as a checkpoint and run the required gate yourself (chapter 19, execution identity).
    - `STOPPED-NO-HANDOFF`: nothing runs and nothing was written. Inspect the worktree (`git status`, `git log`), the stop-gate output and the worker's last message **read-only** before anything else; then either run the authorized gate on the checkpoint or re-dispatch with a fresh allocation. Never send "are you done".
    - `MISSING-WORKTREE`: recreate from the allocation's base and branch after the snapshot preflight, or close the allocation with a note.
 3. Record what changed in `.run/coordinator-session.md` (allocation states, handles) and in `STATE.md`.
-4. A message to a worker is a dispatch for budget purposes: at a dispatch hold, collect and do not wake anyone.
+4. `UNREGISTERED` lines: work that no allocation owns (a worktree, a live pid, a running log). Register it as an allocation before acting on it; an empty registry is not a clean state.
+5. A message to a worker is a dispatch for budget purposes, and the budget guard enforces it: at a dispatch hold, collect and do not wake anyone.

@@ -2,15 +2,42 @@
   "id": "alloc-slice-07-r1",
   "slice": "slice-07",
   "role": "slice-implementer",
-  "worker": {"kind": "subagent", "runtime": "claude", "id": null},
-  "execution": {"pid_file": null, "handles": [], "log_dir": "outputs/slices/slice-07"},
+  "mode": "full",
+  "worker": {
+    "kind": "chat",
+    "runtime": "codex",
+    "id": null,
+    "chat_id": "<thread id of the responsible chat>"
+  },
+  "execution": {
+    "pid_file": ".run/slice-07.pid",
+    "session_id": "<cli session uuid, when separate>",
+    "handles": [],
+    "log_dir": "outputs/slices/slice-07",
+    "queue_marker": ".run/pg-queue/slice-07"
+  },
   "worktree": ".claude/worktrees/slice-07",
   "branch": "slice/07",
   "base": "0000000000000000000000000000000000000000",
   "base_kind": "integration",
-  "allowed_paths": ["src/", "tests/", "docs/process/PROGRESS.md", "docs/process/handoffs/"],
+  "baseline": {
+    "commit": "0000000000000000000000000000000000000000",
+    "gate_log": "outputs/slices/baseline/t1-<ts>.log",
+    "result": "pass",
+    "known_debt": []
+  },
+  "allowed_paths": [
+    "src/",
+    "tests/",
+    "docs/process/PROGRESS.md",
+    "docs/process/handoffs/"
+  ],
+  "unblocks": [],
   "completion": "every FEATURES.json row of slice-07 passes in T1 at the handoff head",
-  "required_artifacts": ["handoff", "tier-log"],
+  "required_artifacts": [
+    "handoff",
+    "tier-log"
+  ],
   "message_ref": "docs/process/slices/slice-07-name.md",
   "opened": "2026-01-01T00:00:00Z",
   "state": "open"

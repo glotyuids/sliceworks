@@ -1,4 +1,4 @@
-# sliceworks 0.5.0. The collector reads completion from artifacts: pid, logs, branch head, handoff.
+# sliceworks 0.6.0. The collector reads completion from artifacts: pid, logs, branch head, handoff.
 import contextlib, importlib.util, io, json, os, pathlib, subprocess, tempfile, unittest
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -51,8 +51,43 @@ class Collector(unittest.TestCase):
         (self.root / "outputs/slices/slice-01/t1-20260101T000000Z.log").write_text("step 1 ...\nRESULT=pass\n")
         self.assertNotIn("RUNNING", run(self.root))
 
+    def log_pass(self):
+        (self.root / "outputs/slices/slice-01/t1-x.log").write_text("step 1\nRESULT=pass\n")
+
     def test_candidate_with_pass_is_done(self):
-        self.handoff(); self.assertIn("DONE", run(self.root))
+        self.handoff(); self.log_pass(); self.assertIn("DONE", run(self.root))
+
+    def test_candidate_claim_without_log_is_unverified(self):
+        self.handoff(); self.assertIn("CANDIDATE-UNVERIFIED", run(self.root)); self.assertIn("not found", run(self.root))
+
+    def test_candidate_claim_contradicted_by_log_is_unverified(self):
+        self.handoff(); (self.root / "outputs/slices/slice-01/t1-x.log").write_text("RESULT=fail\n")
+        self.assertIn("CANDIDATE-UNVERIFIED", run(self.root))
+
+    def test_tiers_row_must_match_head_when_tiers_exist(self):
+        self.handoff(); self.log_pass()
+        head = subprocess.run(["git", "-C", str(self.wt), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        (self.root / "docs/process/metrics").mkdir(parents=True)
+        (self.root / "docs/process/metrics/tiers.jsonl").write_text(json.dumps({"tier": "t1", "head": "deadbeef", "result": "pass"}) + "\n")
+        self.assertIn("CANDIDATE-UNVERIFIED", run(self.root))
+        (self.root / "docs/process/metrics/tiers.jsonl").write_text(json.dumps({"tier": "t1", "head": head[:8], "result": "pass"}) + "\n")
+        self.assertIn("DONE", run(self.root))
+
+    def test_queue_marker_is_queued(self):
+        self.alloc["execution"]["queue_marker"] = ".run/pg-queue/slice-01"; (self.root / "docs/process/allocations/alloc-slice-01-r1.json").write_text(json.dumps(self.alloc))
+        (self.root / ".run/pg-queue").mkdir(parents=True); (self.root / ".run/pg-queue/slice-01").write_text("ticket")
+        self.assertIn("QUEUED", run(self.root))
+
+    def test_unregistered_evidence_is_reported(self):
+        self.alloc["state"] = "closed"; (self.root / "docs/process/allocations/alloc-slice-01-r1.json").write_text(json.dumps(self.alloc))
+        (self.root / ".run").mkdir(exist_ok=True); (self.root / ".run/other.pid").write_text(str(os.getpid()))
+        (self.root / "outputs/slices/slice-09").mkdir(parents=True); (self.root / "outputs/slices/slice-09/t1-y.log").write_text("running\n")
+        out = run(self.root)
+        self.assertIn("ALLOC none open", out); self.assertIn("UNREGISTERED worktree wt", out); self.assertIn("UNREGISTERED pid .run/other.pid alive", out); self.assertIn("UNREGISTERED log outputs/slices/slice-09/t1-y.log", out)
+
+    def test_ids_are_printed(self):
+        self.alloc["worker"]["chat_id"] = "thread-9"; self.alloc["execution"]["session_id"] = "sess-3"; (self.root / "docs/process/allocations/alloc-slice-01-r1.json").write_text(json.dumps(self.alloc))
+        self.assertIn("[chat=thread-9 session=sess-3]", run(self.root))
 
     def test_candidate_without_pass_is_unverified(self):
         self.handoff(verification="NOT_RUN"); self.assertIn("CANDIDATE-UNVERIFIED", run(self.root))

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# sliceworks 0.5.1. Release the package: one command instead of six.
+# sliceworks 0.6.1. Release the package: one command instead of six.
 #   scripts/release.sh <version> ["<one-line summary for the commit>"] [--no-push] [--marketplace <path-to-engineering-skills>]
 # Steps: the CHANGELOG must already carry a "## <version>" section (write the entry first; the script refuses otherwise);
 # bumps .claude-plugin/plugin.json and the README status prefix; runs the hook tests, the Python tests and the strict
@@ -14,6 +14,12 @@ shift; summary=""; push=1; market=""
 while [ $# -gt 0 ]; do case "$1" in --no-push) push=0; shift;; --marketplace) market="${2:-}"; shift 2;; *) summary="$1"; shift;; esac; done
 printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "error: version must be MAJOR.MINOR.PATCH" >&2; exit 1; }
 grep -q "^## $version" CHANGELOG.md || { echo "error: CHANGELOG.md has no '## $version' section; write the entry first" >&2; exit 1; }
+# Preflight against the remote before anything is modified: another session may have released from this checkout.
+git fetch -q --tags origin 2>/dev/null || echo "note: could not fetch origin; checking local state only"
+git rev-parse -q --verify "refs/tags/v$version" >/dev/null 2>&1 && { echo "error: tag v$version already exists (locally or on origin); pick the next version" >&2; exit 1; }
+behind="$(git rev-list --count HEAD..origin/main 2>/dev/null || echo 0)"; [ "$behind" = 0 ] || { echo "error: this checkout is $behind commit(s) behind origin/main; pull or rebase first" >&2; exit 1; }
+current="$(python3 -c 'import json; print(json.load(open(".claude-plugin/plugin.json"))["version"])')"
+[ "$current" != "$version" ] || { echo "error: the manifest is already at $version; another release used this number" >&2; exit 1; }
 [ -z "$(git status --porcelain --untracked-files=no | grep -v '^ M CHANGELOG.md$' | grep -v '^M  CHANGELOG.md$' || true)" ] || echo "note: releasing with uncommitted changes in the tree; they will be included"
 python3 - "$version" <<'PY'
 import json,re,sys

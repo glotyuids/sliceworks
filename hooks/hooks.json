@@ -13,7 +13,7 @@
         ]
       },
       {
-        "matcher": "Agent",
+        "matcher": "Agent|SendMessage|.*send_message.*|.*SendMessage.*",
         "hooks": [
           {
             "type": "command",

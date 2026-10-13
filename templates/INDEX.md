@@ -10,3 +10,4 @@
 | ARCHITECTURE.md | the design | | | |
 | MILESTONES.md | milestones, increments, gates, releases | | | |
 | SCENARIOS.json | user scenarios | | | |
+| RUNTIME.md | known host restrictions and their one authorized remedy | | | |

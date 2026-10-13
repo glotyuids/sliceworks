@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.1
+
+- From the second Codex report (analysis of 2026-10-13): the allocation record distinguishes the responsible chat from the execution session, carries a queue marker, the base commit's gate health (`baseline` with known debt assigned), a `mode` (`full`, `prepare-only`, `review`) and `unblocks` for non-product work; the handoff classifies every failure as introduced, inherited, setup or unproven; the tier-run record gains the full commit, the base, the command, the exit code and the proof state.
+- Collector: `QUEUED` from the queue marker; `DONE` only when the named log ends in `RESULT=pass` and the tiers row matches the handoff head, otherwise `CANDIDATE-UNVERIFIED`; `UNREGISTERED` lines for linked worktrees, live pid files and result-less logs no allocation owns; chat and session ids printed. Fourteen collector tests.
+- Budget guard: every message that wakes a worker is a dispatch (`SendMessage`, cross-thread messaging tools, configurable through `SW_DISPATCH_TOOLS`); 47 hook cases.
+- Method: chapter 19 (two actors, evidence-checked completion, failure classes, dependencies name what they block, `RUNTIME.md` for host restrictions), chapter 4 (the writer cap bounded by verification slots; prepare-only allocations), chapter 14 (`unblocks` on non-product slices), chapter 11 rows. Templates: `RUNTIME.md`, handoff failure table, brief `Unblocks` and `Baseline` lines. `adopt` registers a running project's live work; `collect` acts on the new states.
+
 ## 0.6.0
 
 - Pivot and refocus (method chapter 14, with chapters 13 and 17): the **trigger** that separates a feature from a pivot (a change to the milestone promise, a riskiest assumption, an invariant, or a scenario of the current milestone), answered by the business analysis in one line (`Pivot: yes | no`) and branched on by intake; the **refocus audit**, in which the two read-only analysts walk every document, scenario, row, contract, spec and threat model against the pivot decision and the coordinator records keep, amend or archive per item in `refocus/<D-id>.md` (template `refocus.md`); **archiving** for living documents (`git mv` to `archive/<date>-<name>`, the `INDEX.md` row kept with status `archived (D-n)`, specs superseded in place, scenarios thinned, contracts retired); `refocus` re-runs `design` for every surface marked amend, citing the pivot D, before re-mapping and re-planning; the `pivot` marker on a D entry's metadata line.

@@ -10,13 +10,18 @@ written: <timestamp>
 
 # Handoff <allocation>
 
-<!-- sliceworks 0.5.0. Committed by the worker on its branch before it returns (method chapter 19). The CANDIDATE, BLOCKED or HOLD message is a pointer to this file; this file is the record. -->
+<!-- sliceworks 0.6.0. Committed by the worker on its branch before it returns (method chapter 19). The CANDIDATE, BLOCKED or HOLD message is a pointer to this file; this file is the record. -->
 
 ## Completed scope
 <rows flipped, files changed in one line each>
 
 ## Verification
 <what ran, from which commit, with which boundary (compile-only, executed, runtime); the RESULT line; what was NOT_RUN and why>
+
+## Failures, classified
+<!-- against the allocation's baseline: a failure is introduced (absent on the base), inherited (present on the base; still blocks a mandatory gate, assigned, never waived), setup (NOT_RUN, the workload never started; the known remedy), or unproven (cause not established; stays red) -->
+| check | class (introduced, inherited, setup, unproven) | evidence | assigned to |
+|---|---|---|---|
 
 ## Findings decided out of scope
 <id: reason>

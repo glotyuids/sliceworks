@@ -2,19 +2,97 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/glotyuids/sliceworks/schemas/tier-run.schema.json",
   "title": "sliceworks tier run",
-  "description": "One line of metrics/tiers.jsonl, written by the tier runner at the end of every run.",
+  "description": "One line of metrics/tiers.jsonl, written by the tier runner at the end of every run. An execution record binds the command, the full source identity, the assigned base, the log and the real exit result (method chapter 19).",
   "type": "object",
-  "required": ["at", "tier", "slice", "head", "result", "seconds", "log"],
+  "required": [
+    "at",
+    "tier",
+    "slice",
+    "head",
+    "result",
+    "seconds",
+    "log"
+  ],
   "properties": {
-    "at": {"type": "string", "format": "date-time"},
-    "tier": {"type": "string", "enum": ["t0", "t1", "t2", "t3", "t4"]},
-    "slice": {"type": "string"},
-    "head": {"type": "string"},
-    "result": {"type": "string", "enum": ["pass", "fail", "NOT_RUN"]},
-    "seconds": {"type": "integer", "minimum": 0},
-    "steps": {"type": "integer", "minimum": 0},
-    "fails": {"type": "string", "description": "space-joined step labels that failed"},
-    "log": {"type": "string"},
-    "interrupted": {"type": "boolean"}
+    "at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ]
+    },
+    "slice": {
+      "type": "string"
+    },
+    "head": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "NOT_RUN"
+      ]
+    },
+    "seconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "steps": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fails": {
+      "type": "string",
+      "description": "space-joined step labels that failed"
+    },
+    "log": {
+      "type": "string"
+    },
+    "interrupted": {
+      "type": "boolean"
+    },
+    "head_full": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "the full commit the run certifies; head is its 8-character prefix"
+    },
+    "base": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "the assigned base, when the run compares against one"
+    },
+    "command": {
+      "type": "string",
+      "description": "the exact command line that ran"
+    },
+    "exit_code": {
+      "type": "integer"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "hashes or names of inputs the result depends on (environment file, fixtures), opaque"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "compiled",
+        "executed",
+        "runtime-verified",
+        "NOT_RUN"
+      ],
+      "description": "what the run proves"
+    }
   }
 }

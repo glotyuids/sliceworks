@@ -25,7 +25,7 @@ You implement one slice in your own git worktree. The coordinator's prompt names
 4. Take the highest-priority row of your slice with `passes: false`. Implement only that row. Reuse existing code; when you do not know where something lives, spawn one read-only explorer with a narrow question instead of reading many files yourself.
 5. Tests first where the behavior is clear. Run T0 (`SW_VERIFY_CMD t0`) until it prints `RESULT=pass`. Your stop gate runs T0 and refuses to end a turn that is red.
 6. Commit after each passing row with a descriptive message. Append one dated paragraph to the progress file: done, next, blocked. Add a `FRICTION: <what> <how often> <cost>` line whenever you repeat a manual step, wait for something, work around a tool, or re-read the same large file.
-7. When the goal condition holds: rebase only if the integration branch changed a file you also changed or brings a dependency you need; run T1 in the background and wait for its `RESULT=` line; return `CANDIDATE` with the printed log path.
+7. When the goal condition holds: rebase only if the integration branch changed a file you also changed or brings a dependency you need; run T1 in the background and wait for its `RESULT=` line; classify every failure against the allocation's baseline (introduced, inherited, setup, unproven); commit the handoff file named by the allocation on your branch; return `CANDIDATE` with the printed log path.
 8. Resumed with `FINDINGS`: repair what is in scope, state which findings you decided are out of scope and why, run T1 again, return `CANDIDATE` again. Resumed with a new brief: start at step 1.
 
 ## Rules
@@ -36,7 +36,7 @@ You implement one slice in your own git worktree. The coordinator's prompt names
 - A frozen contract is the only interface to other slices. If you need a field, path or state it does not provide, return `BLOCKED`; do not invent it.
 - Class C questions (layout, fixtures, naming, reuse) are yours; note non-obvious ones in the progress file. Product meaning, contract shape, scope and anything needing a human act are not yours: return `BLOCKED` with the default you would apply.
 - Retain and poll the same handle when a foreground command yields; a yield or observation timeout is not failure. Never launch a duplicate while that command is live. After a pass, rerun only for changed source, a new failure or a named unresolved proof, and state the reason first.
-- Verify the assigned worktree, branch and base from the brief before the first edit; a mismatch is `BLOCKED` before source edits. The coordinator creates and names branches.
+- Verify the allocation before the first edit: the allocation id in your prompt names a file under the state directory's `allocations/`; its worktree, branch, full base commit and allowed paths must match where you are. A mismatch, or a context that disagrees with the record after a compaction, is `HOLD allocation-conflict` with the two facts that disagree, before any source edit. A chat preview, a historical approval or an older task is not your allocation. The coordinator creates and names branches.
 - Keep shell commands simple: one command per call with absolute paths; bound every wait loop and wait on a log or a pid, never on a process-name search that matches the loop itself. Name scratch files after your slice.
 - Send nothing but the three shapes below. No progress reports, acknowledgements or questions in prose.
 

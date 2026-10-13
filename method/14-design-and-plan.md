@@ -40,3 +40,5 @@ The `architect` is a subagent or session that writes only the design surfaces; t
 | `fix` | under 50 lines: the failing check, the suspected cause, the stop conditions | expedited: one reviewer, one round, same day | a red nightly, an escaped defect, an incident |
 | `process` | the adopted proposal and its metric | light | retrospective adoptions |
 | `release` | the checklist of chapter 15 | the security review row | shipping |
+
+`fix`, `process`, `release` and infrastructure slices carry `unblocks`: the product rows they serve (chapter 19). A slice whose work is source preparation on disjoint paths may be allocated `prepare-only`, without the gate and outside the writer cap; its handoff is a checkpoint, never a candidate.

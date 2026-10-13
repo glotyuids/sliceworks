@@ -4,26 +4,237 @@
   "title": "sliceworks allocation record",
   "description": "One dispatch of one role to one worker (method chapter 19). Committed by the coordinator under <state-dir>/allocations/<id>.json before the worker starts; the unit of recovery after a compaction; what the collector reads.",
   "type": "object",
-  "required": ["id", "slice", "role", "worker", "worktree", "branch", "base", "allowed_paths", "completion", "required_artifacts", "opened", "state"],
+  "required": [
+    "id",
+    "slice",
+    "role",
+    "worker",
+    "worktree",
+    "branch",
+    "base",
+    "allowed_paths",
+    "completion",
+    "required_artifacts",
+    "opened",
+    "state"
+  ],
   "additionalProperties": false,
   "properties": {
-    "id": {"type": "string", "pattern": "^alloc-[A-Za-z0-9._-]+$"},
-    "slice": {"type": "string"},
-    "role": {"type": "string", "enum": ["slice-implementer", "code-reviewer", "named-risk-reviewer", "contract-author", "architect", "researcher", "efficiency-reviewer", "auditor", "other"]},
-    "worker": {"type": "object", "required": ["kind", "runtime"], "additionalProperties": false,
-      "properties": {"kind": {"type": "string", "enum": ["subagent", "chat", "cli"]}, "runtime": {"type": "string"}, "id": {"type": ["string", "null"], "description": "agent id, thread id or session id"}}},
-    "execution": {"type": "object", "additionalProperties": false,
-      "properties": {"pid_file": {"type": ["string", "null"]}, "handles": {"type": "array", "items": {"type": "string"}}, "log_dir": {"type": ["string", "null"], "description": "where the worker's tier logs land, relative to the repository root"}}},
-    "worktree": {"type": "string", "description": "path relative to the repository root, or absolute"},
-    "branch": {"type": "string"},
-    "base": {"type": "string", "pattern": "^[0-9a-f]{40}$", "description": "the full commit the work is built on; a stacked or companion base is still a full commit"},
-    "base_kind": {"type": "string", "enum": ["integration", "stacked", "companion"], "default": "integration"},
-    "allowed_paths": {"type": "array", "items": {"type": "string"}},
-    "completion": {"type": "string", "minLength": 1},
-    "required_artifacts": {"type": "array", "items": {"type": "string", "enum": ["handoff", "tier-log", "review", "plan", "contract", "report"]}},
-    "message_ref": {"type": ["string", "null"], "description": "the brief or findings file the dispatch pointed at"},
-    "opened": {"type": "string", "format": "date-time"},
-    "state": {"type": "string", "enum": ["open", "stopped", "collected", "closed"]},
-    "note": {"type": "string"}
+    "id": {
+      "type": "string",
+      "pattern": "^alloc-[A-Za-z0-9._-]+$"
+    },
+    "slice": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "slice-implementer",
+        "code-reviewer",
+        "named-risk-reviewer",
+        "contract-author",
+        "architect",
+        "researcher",
+        "efficiency-reviewer",
+        "auditor",
+        "other"
+      ]
+    },
+    "worker": {
+      "type": "object",
+      "required": [
+        "kind",
+        "runtime"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "subagent",
+            "chat",
+            "cli"
+          ]
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "the acting worker's id: agent id (subagent) or CLI session id; kept for one-actor runtimes"
+        },
+        "chat_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "the responsible chat or thread when a native chat brokers a separate execution session"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pid_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "handles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "log_dir": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "where the worker's tier logs land, relative to the repository root"
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "the execution session (CLI session uuid) when it differs from the chat"
+        },
+        "queue_marker": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "a file whose presence means the worker is waiting in a legitimate resource queue (a slot ticket); the collector reports QUEUED while it exists"
+        }
+      }
+    },
+    "worktree": {
+      "type": "string",
+      "description": "path relative to the repository root, or absolute"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "base": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "the full commit the work is built on; a stacked or companion base is still a full commit"
+    },
+    "base_kind": {
+      "type": "string",
+      "enum": [
+        "integration",
+        "stacked",
+        "companion"
+      ],
+      "default": "integration"
+    },
+    "allowed_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "handoff",
+          "tier-log",
+          "review",
+          "plan",
+          "contract",
+          "report"
+        ]
+      }
+    },
+    "message_ref": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "the brief or findings file the dispatch pointed at"
+    },
+    "opened": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "stopped",
+        "collected",
+        "closed"
+      ]
+    },
+    "note": {
+      "type": "string"
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "gate health of the base commit at dispatch, so a candidate's failures can be classified as introduced or inherited",
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "gate_log": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "result": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "pass",
+            "fail",
+            "NOT_RUN",
+            null
+          ]
+        },
+        "known_debt": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "failing checks or lint findings already present on the base, each assigned to a slice or recorded as a debt row"
+        }
+      }
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "full",
+        "prepare-only",
+        "review"
+      ],
+      "default": "full",
+      "description": "prepare-only: source work on disjoint paths without the gate, beyond the writer cap; review: a read-only allocation"
+    },
+    "unblocks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "for fix, process, release and infrastructure allocations: the product rows this work unblocks; such an allocation blocks only those rows"
+    }
   }
 }

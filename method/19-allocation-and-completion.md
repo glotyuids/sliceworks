@@ -20,8 +20,11 @@ Nothing is dispatched without an allocation record, `allocations/<id>.json` unde
 | Field | Meaning |
 |---|---|
 | `id`, `slice`, `role` | what is allocated to whom |
-| `worker` | kind (`subagent`, `chat`, `cli`), runtime, identifier (agent id, thread id, session id) |
-| `execution` | the pid file and handles of long commands the worker or the coordinator started for it |
+| `worker` | kind (`subagent`, `chat`, `cli`), runtime, the acting worker's id, and `chat_id` when a native chat brokers a separate execution session: two actors, two identifiers |
+| `execution` | the execution `session_id` when it differs from the chat, the pid file and handles of long commands, the log directory, and a `queue_marker` whose presence means a legitimate wait for a shared resource |
+| `baseline` | the gate health of the base commit at dispatch: its log, result and the known debt already present, each item assigned; without it a candidate's failures cannot be classified |
+| `mode` | `full`; `prepare-only` for source work on disjoint paths without the gate, beyond the writer cap; `review` for a read-only allocation |
+| `unblocks` | for fix, process, release and infrastructure allocations, the product rows the work unblocks; such an allocation blocks only those rows and nothing else |
 | `worktree`, `branch`, `base` | where it works, on which branch, from which **full 40-character** commit; a stacked or companion base is recorded as such |
 | `allowed_paths` | what it may write; the role guard and the diff gate enforce the same list |
 | `completion` | the condition under which the allocation is complete, in one sentence |
@@ -37,7 +40,7 @@ A worker ends every allocation by writing a **handoff**, `handoffs/<allocation-i
 
 ## Collection
 
-The coordinator **collects**, it does not ask. `scripts/collect.py` reads every open allocation and prints one line per allocation from evidence alone: `RUNNING` when a handle or pid is live or a tier log has no `RESULT=` yet; `DONE` when the handoff exists, its head equals the branch head and its verification passed; `BLOCKED` or `HOLD` from the handoff; `STOPPED-NO-HANDOFF` when nothing runs and nothing was written; `STALE-HANDOFF` when the branch moved past the handoff's head. The resume routine runs it first and after every wake. Chat inspection, where a runtime offers it, is read-only and secondary.
+The coordinator **collects**, it does not ask. `scripts/collect.py` reads every open allocation and prints one line per allocation from evidence alone: `RUNNING` when a handle or pid is live or a tier log has no `RESULT=` yet; `QUEUED` while the queue marker exists; `DONE` only when the handoff exists, its head equals the branch head, **and** the log it names ends in `RESULT=pass` with a matching row in the tiers file when one exists; `CANDIDATE-UNVERIFIED` when the handoff claims what the evidence does not prove; `BLOCKED` or `HOLD` from the handoff; `STOPPED-NO-HANDOFF` when nothing runs and nothing was written; `STALE-HANDOFF` when the branch moved past the handoff's head. After the allocations it lists `UNREGISTERED` evidence: linked worktrees, live pid files and result-less logs that no open allocation owns, so an empty registry is never read as a clean state; adoption of a running project registers that evidence into allocations first. A handoff, a dashboard label or a collector line never establishes completion without the underlying execution evidence. The resume routine runs the collector first and after every wake. Chat inspection, where a runtime offers it, is read-only and secondary.
 
 Rules that follow:
 
@@ -67,13 +70,19 @@ Three states, never conflated, each named in handoffs, briefs and ledger evidenc
 | **executed** | the tests ran under the execution boundary that was intended (a compile-only check must prevent even package initialisation and `TestMain`) | that the product works end to end |
 | **runtime-verified** | the scenario or demo ran against the real dependency from the pinned commit, with the log | acceptance by the owner |
 
-Launch, cache, sandbox and output failures before a check starts are `NOT_RUN`: the known remedy is recorded once, in the project's runtime notes, and no further writer turn rediscovers it. Preparation checks for changed production code build the production package, not only the tests: a test-only build passed while production did not compile because a helper lived in a test file.
+Launch, cache, sandbox and output failures before a check starts are `NOT_RUN`: the known remedy is recorded once, in the project's `RUNTIME.md` (restriction, symptom, authorized remedy, decision), and no further writer turn rediscovers it.
+
+**Failures are classified against the baseline** recorded in the allocation: *introduced* (absent on the base), *inherited* (present on the base; it still blocks a mandatory gate and is assigned to a slice or a debt row, never waived), *setup* (`NOT_RUN`), *unproven* (cause not established; the gate stays red). The handoff carries the table; the coordinator assigns inherited debt explicitly before the next dispatch rather than letting the next slice discover it. Preparation checks for changed production code build the production package, not only the tests: a test-only build passed while production did not compile because a helper lived in a test file.
 
 Configuration loading never owns execution. A shell that sources configuration into the process that runs a check can replace its arguments or exit zero before the check runs; the loader supplies values as data, and the process that owns the command, the result rows and the step counts is the one that reports them. A zero exit code or well-formed JSON with zero steps is not evidence that the intended command ran.
 
 ## Approval, preparation, proof
 
 A review pass approves **source**. A green preparation check establishes a **prepared** checkpoint. A runtime verification establishes **proof**. Tooling that passes its own gates is not accepted product. Each is recorded in its own words in state and ledger evidence, because the first run's code review passed where its named-risk review then found a real gap, and the runtime proof stayed open.
+
+## Dependencies name what they block
+
+Infrastructure, process and fix work is allocated with `unblocks`: the product rows it serves. It blocks those rows and nothing else; independent source work, pure checks, reviews and verification in a supported environment continue meanwhile. The ready detector prefers allocations that advance product rows, and the retrospective reads product rows passing next to tooling rows passing, because the first run spent review rounds on a baseline consolidation while independently executable product work stayed parked.
 
 ## Bounded repair
 

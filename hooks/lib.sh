@@ -1,4 +1,4 @@
-# sliceworks 0.2.0: shared helpers for the hooks. POSIX sh, needs jq.
+# sliceworks 0.6.0: shared helpers for the hooks. POSIX sh, needs jq.
 # Sourced after `input="$(cat)"`. Every hook calls sw_load_config and exits 0 when it returns 1.
 
 sw_root() {
@@ -20,6 +20,7 @@ sw_load_config() {
   SW_WEEKLY_DISPATCH_HOLD=80; SW_WEEKLY_STOP=85; SW_FIVE_HOUR_DISPATCH_HOLD=90; SW_FIVE_HOUR_STOP=100
   SW_READING_MAX_AGE=5400; SW_OWNER_SHARE_PCT=15
   SW_EXPLORER_AGENTS="Explore Plan claude-code-guide code-explorer sliceworks:code-explorer"
+  SW_DISPATCH_TOOLS="Agent SendMessage send_message"   # tool names, or substrings, that start a worker turn: all count as dispatch
   SW_INFRA_DENY="kubectl| helm |terraform| yc |ansible|docker push|docker rm|docker stop"
   SW_CONTRACT_SURFACES=""
   SW_PROTECTED_EXTRA=""

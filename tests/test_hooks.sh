@@ -33,6 +33,12 @@ printf '{"at":"%s","event":"manual","runtime":"codex","weekly_pct":82,"weekly_re
 expect "budget: 82%% with epoch reset holds" deny budget-guard '{"tool_name":"Agent","tool_input":{"subagent_type":"general-purpose"}}'
 printf '{"at":"%s","event":"manual","runtime":"claude","weekly_pct":40,"weekly_reset":"2027-01-01T00:00:00Z","five_hour_pct":5}\n' "$now" > docs/process/metrics/usage.jsonl
 expect "budget: 40%% allows" allow budget-guard '{"tool_name":"Agent","tool_input":{"subagent_type":"general-purpose"}}'
+expect "budget: message at 40%% allows" allow budget-guard '{"tool_name":"SendMessage","tool_input":{"to":"worker","message":"go"}}'
+printf '{"at":"%s","event":"manual","runtime":"claude","weekly_pct":82,"weekly_reset":"2027-01-01T00:00:00Z","five_hour_pct":5}\n' "$now" > docs/process/metrics/usage.jsonl
+expect "budget: message to a chat at 82%% is a dispatch" deny budget-guard '{"tool_name":"SendMessage","tool_input":{"to":"worker","message":"status?"}}'
+expect "budget: cross-thread message at 82%% is a dispatch" deny budget-guard '{"tool_name":"mcp__codex__send_message_to_thread","tool_input":{"threadId":"x","prompt":"status?"}}'
+expect "budget: unrelated tool at 82%% allowed" allow budget-guard '{"tool_name":"Read","tool_input":{"file_path":"x"}}'
+printf '{"at":"%s","event":"manual","runtime":"claude","weekly_pct":40,"weekly_reset":"2027-01-01T00:00:00Z","five_hour_pct":5}\n' "$now" > docs/process/metrics/usage.jsonl
 expect "role: main session unguarded" allow role-guard '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
 expect "role: implementer git push" deny role-guard "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"git push origin main\"},$IMPL,\"cwd\":\"$P\"}"
 expect "role: implementer git merge-base allowed" allow role-guard "{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"git merge-base HEAD main\"},$IMPL,\"cwd\":\"$P\"}"

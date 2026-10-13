@@ -14,3 +14,5 @@
 Material boundary: yes | no
 Goal condition: <the condition the implementer must satisfy before returning CANDIDATE>
 Dependencies: hard <slices whose merged code this needs>; soft <slices this can start without, with the stub plan>; touches <hot areas, for rebase risk>
+Unblocks (fix, process, release and infrastructure slices only): <the product rows this work unblocks; it blocks nothing else>
+Baseline: <full commit and the gate log of the base, so failures can be classified>

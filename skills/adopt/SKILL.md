@@ -37,7 +37,7 @@ One message, every remaining question, with your best guess pre-filled so the us
 From `${CLAUDE_PLUGIN_ROOT}/templates/`, substituting the answers:
 
 - `.sliceworks/config.env` from `config.env` (every `SW_*` the hooks read).
-- `<state-dir>/`: `FEATURES.json` (an empty array, or rows the user already has), `STATE.md`, `BACKLOG.md`, `PROGRESS.md`, `DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `MILESTONES.md`, `SCENARIOS.json` (empty array), `SPARK.md`, `ARCHITECTURE.md`, `INDEX.md`, `INCIDENTS.md`, `FEEDBACK.md`, `START.md`, `contracts/`, `slices/`, `plans/`, `rounds/`, `threat-models/`, `accept/`, `allocations/`, `handoffs/`, `intake/`, `refocus/`, `archive/`, `retros/PROPOSALS.md`, `retros/proposals/`, `metrics/` (empty `usage.jsonl`, `tiers.jsonl`, `money.jsonl`), `demos/`, `evals/README.md`, `specs/README.md` at the repository root. Omit the files of phases the profile does not run (`SW_PHASES`).
+- `<state-dir>/`: `FEATURES.json` (an empty array, or rows the user already has), `STATE.md`, `BACKLOG.md`, `PROGRESS.md`, `DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `MILESTONES.md`, `SCENARIOS.json` (empty array), `SPARK.md`, `ARCHITECTURE.md`, `INDEX.md`, `RUNTIME.md`, `INCIDENTS.md`, `FEEDBACK.md`, `START.md`, `contracts/`, `slices/`, `plans/`, `rounds/`, `threat-models/`, `accept/`, `allocations/`, `handoffs/`, `intake/`, `refocus/`, `archive/`, `retros/PROPOSALS.md`, `retros/proposals/`, `metrics/` (empty `usage.jsonl`, `tiers.jsonl`, `money.jsonl`), `demos/`, `evals/README.md`, `specs/README.md` at the repository root. Omit the files of phases the profile does not run (`SW_PHASES`).
 - `.claude/rules/sliceworks.md` from `rules.md` (the rules for every agent), and the `AGENTS.fragment.md` block appended to `AGENTS.md` (create `AGENTS.md` and a `CLAUDE.md` containing `@AGENTS.md` if neither exists).
 - `.claude/settings.json`: merge the keys of `settings.fragment.json` (permissions, environment, subagent model, cache TTL, auto-continue, worktree base, `enabledPlugins`). Show the diff before writing. Do not copy any hook into settings: the plugin's hooks already run, and a duplicate runs twice.
 - `.gitignore`: add `<state-dir>/STATUS.md`, `<state-dir>/STOP`, `.run/`, `<outputs>/`.
@@ -49,6 +49,10 @@ Stamp every written file with `# sliceworks <version>` (or the `metadata` block 
 ## Phase 3b, the skills library
 
 The survey lists the skills installed from `engineering-skills` and the packs it recommends for this stack and these phases (method chapter 18). Offer the recommended packs in the Phase 2 message; install the confirmed ones through the library's own procedure (its README's agent-followable section, or `scripts/install.sh` from a clone), never by copying skills yourself. Record declined packs as a `D` entry so the survey stops recommending them.
+
+## Phase 3c, a running project
+
+If the survey found linked worktrees, live pid files or result-less logs, register each as an allocation record (worker unknown, state `stopped` or `open` as the evidence says) before anything is dispatched; run the collector and confirm it reports no `UNREGISTERED` lines. A project adopted mid-run with an empty registry would otherwise read as idle.
 
 ## Phase 4, self-test
 

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-# sliceworks 0.5.0. The collector (method chapter 19): completion read from durable artifacts, never from a message.
+# sliceworks 0.6.0. The collector (method chapter 19): completion read from durable artifacts, never from a message.
 #   collect.py --root <repo> [--state-dir docs/process] [--json]
 # For every open or stopped allocation prints one line:
 #   ALLOC <id> <STATE> <detail>
-# States: RUNNING (a recorded pid is alive, or the latest tier log has no RESULT= yet), DONE (handoff present, its head
-# equals the branch head, its verification passed), BLOCKED or HOLD (from the handoff), STALE-HANDOFF (branch moved
-# past the handoff head), STOPPED-NO-HANDOFF (nothing runs and nothing was written), MISSING-WORKTREE.
+# States: RUNNING (a recorded pid is alive, or the latest tier log has no RESULT= yet), QUEUED (the queue marker exists:
+# a legitimate wait for a shared resource), DONE (handoff present, its head equals the branch head, and the verification
+# it names is proven by the log's last RESULT=pass and, when metrics/tiers.jsonl exists, a row for that head), BLOCKED or
+# HOLD (from the handoff), STALE-HANDOFF (branch moved past the handoff head), CANDIDATE-UNVERIFIED (handoff claims a
+# candidate but the evidence does not prove it), STOPPED-NO-HANDOFF (nothing runs and nothing was written),
+# MISSING-WORKTREE. After the allocations it prints UNREGISTERED lines for worktrees, pid files and result-less logs
+# that no open allocation owns, so an empty registry is never a clean report.
 # Detection only; nothing is written and no message is sent.
 import argparse, json, os, pathlib, re, subprocess, sys
 
@@ -60,6 +64,73 @@ def latest_log_result(root, log_dir):
     return str(logs[-1].relative_to(root)), (m[-1] if m else None)
 
 
+def verification_proven(root, state_dir, h, head):
+    """A handoff's claim is proven only by the log it names (last RESULT=pass) and, when the tiers file exists, a row for that head."""
+    if h.get("verification_result") != "pass":
+        return False, f"handoff verification {h.get('verification_result') or 'missing'}"
+    log = h.get("verification_log")
+    if not log:
+        return False, "handoff names no log"
+    lp = pathlib.Path(log); lp = lp if lp.is_absolute() else root / lp
+    if not lp.exists():
+        return False, f"log {log} not found"
+    results = re.findall(r"^RESULT=(\w+)", lp.read_text(errors="ignore"), re.M)
+    if not results or results[-1] != "pass":
+        return False, f"log {log} ends with RESULT={results[-1] if results else 'none'}"
+    tiers = root / state_dir / "metrics" / "tiers.jsonl"
+    if tiers.exists() and head:
+        rows = [json.loads(l) for l in tiers.read_text().splitlines() if l.strip()]
+        match = [r for r in rows if head.startswith(str(r.get("head", "")) or "\0") or r.get("head_full") == head]
+        if not match:
+            return False, f"no tiers row for head {head[:8]}"
+        if not any(r.get("result") == "pass" for r in match):
+            return False, f"tiers rows for {head[:8]} are not pass"
+    return True, f"{log} RESULT=pass"
+
+
+def unregistered(root, state_dir, allocs, worktree_root, outputs_dir):
+    """Evidence of work that no open allocation owns: linked worktrees (from git itself), live pid files, result-less logs."""
+    owned_wt = {str((root / a["worktree"]).resolve()) if not pathlib.Path(a["worktree"]).is_absolute() else str(pathlib.Path(a["worktree"]).resolve()) for a in allocs}
+    owned_pid = {(a.get("execution") or {}).get("pid_file") for a in allocs}
+    owned_logs = {(a.get("execution") or {}).get("log_dir") for a in allocs}
+    out = []
+    main_wt = str(root.resolve())
+    porcelain = git(root, "worktree", "list", "--porcelain") or ""
+    for block in porcelain.split("\n\n"):
+        lines = block.strip().splitlines()
+        if not lines or not lines[0].startswith("worktree "):
+            continue
+        path = lines[0][len("worktree "):].strip()
+        try:
+            rp = str(pathlib.Path(path).resolve())
+        except Exception:
+            rp = path
+        if rp == main_wt or rp in owned_wt:
+            continue
+        branch = next((l[len("branch refs/heads/"):] for l in lines if l.startswith("branch refs/heads/")), "detached")
+        try:
+            shown = str(pathlib.Path(rp).relative_to(root.resolve()))
+        except ValueError:
+            shown = rp
+        out.append(("worktree", shown, branch))
+    run = root / ".run"
+    if run.is_dir():
+        for pf in sorted(run.glob("*.pid")):
+            rel = str(pf.relative_to(root))
+            if rel not in owned_pid and pid_alive(pf):
+                out.append(("pid", rel, "alive"))
+    od = root / outputs_dir / "slices"
+    if od.is_dir():
+        for sd in sorted(p for p in od.iterdir() if p.is_dir()):
+            rel = str(sd.relative_to(root))
+            if rel in owned_logs:
+                continue
+            log, result = latest_log_result(root, rel)
+            if log and result is None:
+                out.append(("log", log, "no RESULT= yet"))
+    return out
+
+
 def assess(root, state_dir, alloc):
     wt = pathlib.Path(alloc["worktree"])
     wt = wt if wt.is_absolute() else root / wt
@@ -68,6 +139,9 @@ def assess(root, state_dir, alloc):
     pid_file = (alloc.get("execution") or {}).get("pid_file")
     if pid_file and pid_alive(root / pid_file):
         return "RUNNING", f"pid in {pid_file} is alive"
+    qm = (alloc.get("execution") or {}).get("queue_marker")
+    if qm and (root / qm).exists():
+        return "QUEUED", f"queue marker {qm} present: waiting for a shared resource"
     log_dir = (alloc.get("execution") or {}).get("log_dir")
     log, result = latest_log_result(root, log_dir)
     if log and result is None:
@@ -86,9 +160,10 @@ def assess(root, state_dir, alloc):
     if res in ("BLOCKED", "HOLD"):
         return res, f"handoff {handoff_rel}: {h.get('verification_result') or 'no verification'}"
     if res == "CANDIDATE":
-        if h.get("verification_result") == "pass":
-            return "DONE", f"candidate at {head[:8]}, {h.get('verification_log') or 'log unnamed'} pass"
-        return "STOPPED-NO-HANDOFF" if not h else "CANDIDATE-UNVERIFIED", f"candidate at {head[:8]} with verification {h.get('verification_result') or 'missing'}"
+        ok, why = verification_proven(root, state_dir, h, head)
+        if ok:
+            return "DONE", f"candidate at {head[:8]}, {why}"
+        return "CANDIDATE-UNVERIFIED", f"candidate at {head[:8]}: {why}"
     return "STOPPED-NO-HANDOFF", f"handoff present but result unreadable: {res or 'none'}"
 
 
@@ -107,8 +182,14 @@ def main(argv=None):
             m = re.search(r"^SW_STATE_DIR=(\S+)", cfg.read_text(), re.M)
             if m:
                 state_dir = m.group(1).strip('"')
+    worktree_root, outputs_dir = ".claude/worktrees", "outputs"
+    cfg = root / ".sliceworks" / "config.env"
+    if cfg.exists():
+        t = cfg.read_text()
+        m = re.search(r"^SW_WORKTREE_ROOT=(\S+)", t, re.M); worktree_root = m.group(1).strip('"') if m else worktree_root
+        m = re.search(r"^SW_OUTPUTS_DIR=(\S+)", t, re.M); outputs_dir = m.group(1).strip('"') if m else outputs_dir
     adir = root / state_dir / "allocations"
-    rows = []
+    rows = []; open_allocs = []
     for f in sorted(adir.glob("*.json")) if adir.is_dir() else []:
         try:
             alloc = json.loads(f.read_text())
@@ -116,15 +197,22 @@ def main(argv=None):
             rows.append({"id": f.stem, "state": "UNREADABLE", "detail": str(e)}); continue
         if alloc.get("state") in ("closed", "collected"):
             continue
+        open_allocs.append(alloc)
         state, detail = assess(root, state_dir, alloc)
-        rows.append({"id": alloc["id"], "slice": alloc.get("slice"), "role": alloc.get("role"), "state": state, "detail": detail})
+        w = alloc.get("worker") or {}; ex = alloc.get("execution") or {}
+        rows.append({"id": alloc["id"], "slice": alloc.get("slice"), "role": alloc.get("role"), "state": state, "detail": detail,
+                     "chat": w.get("chat_id"), "session": ex.get("session_id") or w.get("id")})
+    extra = unregistered(root, state_dir, open_allocs, worktree_root, outputs_dir)
     if a.json:
-        print(json.dumps(rows, indent=2))
+        print(json.dumps({"allocations": rows, "unregistered": [{"kind": k, "path": p, "detail": x} for k, p, x in extra]}, indent=2))
     else:
         for r in rows:
-            print(f"ALLOC {r['id']} {r['state']} {r['detail']}")
+            ids = " ".join(f"{k}={v}" for k, v in (("chat", r.get("chat")), ("session", r.get("session"))) if v)
+            print(f"ALLOC {r['id']} {r['state']} {r['detail']}{(' [' + ids + ']') if ids else ''}")
         if not rows:
             print("ALLOC none open")
+        for k, p, x in extra:
+            print(f"UNREGISTERED {k} {p} {x}")
     return 0
 
 
