@@ -4,7 +4,7 @@ description: Learn about the product, not the process - run evaluation suites un
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Learn

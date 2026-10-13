@@ -4,7 +4,7 @@ description: The one entry point of sliceworks - look at the project's state and
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Start: run what is next

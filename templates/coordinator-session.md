@@ -7,9 +7,9 @@ Updated: <timestamp>
 ## Where we are
 - increment, state, what merged last, what is in review
 
-## Running agents
-| slice | role | agent id | since | last message |
-|---|---|---|---|---|
+## Open allocations (authority: <state-dir>/allocations/*.json; this is the quick view)
+| allocation | slice | role | worker id | handle or pid | last collector state | since |
+|---|---|---|---|---|---|---|
 
 ## Background tasks
 | task | id | since |

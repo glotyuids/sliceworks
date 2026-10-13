@@ -15,7 +15,7 @@ Scope: reviewed <n> files; reused T1 evidence for <units>; not reviewed: <explic
 
 Severity by product impact: High blocks the merge; Medium blocks unless the implementer states why it is out of scope; Low is advisory. Style, naming and abstraction preferences are not findings. The implementer decides which findings are in scope and says so in the next `CANDIDATE`.
 
-Rounds: the same reviewer is resumed for the delta. After two substantive rounds in one issue family, the coordinator diagnoses the requirement or the oracle before any further repair.
+Rounds: the same reviewer is resumed for the delta. A failing round names the concrete obstruction, preserves the failed result and issues one bounded correction to the same implementer (chapter 19). After two substantive rounds in one issue family, the coordinator diagnoses the requirement or the oracle before any further repair. A review pass approves source; it is not a prepared checkpoint and not runtime proof.
 
 Named-risk review: triggered by the brief's material-boundary flag. One named question, separate verdict, the strongest model. Both verdicts must pass.
 

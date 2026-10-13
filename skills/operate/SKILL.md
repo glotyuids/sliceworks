@@ -4,7 +4,7 @@ description: Run a sliceworks product in production - install probe rows and the
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Operate

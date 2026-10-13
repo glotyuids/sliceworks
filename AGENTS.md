@@ -34,7 +34,7 @@ is public under Apache-2.0: no hostnames, no local paths, no personal data, no p
 .claude-plugin/plugin.json   plugin manifest (Claude Code; Codex reads it as a fallback)
 .agents/plugins/marketplace.json  the Codex marketplace file: this repository lists itself as a plugin
 agents/                      coordinator-facing subagent profiles
-skills/                      start, adopt, survey, prepare, intake, kickoff, discover, decide, design, plan-increment, brief, refocus, resume, retro, accept, release, operate, learn, update
+skills/                      start, adopt, survey, prepare, intake, kickoff, discover, decide, design, plan-increment, brief, collect, refocus, resume, retro, accept, release, operate, learn, update
 hooks/                       hooks.json plus the hook bodies (POSIX sh, jq)
 templates/                   state files and ledgers for every phase, round/, brief, contract, retro, proposal, demo, release, acceptance packet, config, settings fragment
 schemas/                     JSON Schemas for the state-file rows and telemetry
@@ -42,7 +42,7 @@ method/                      the process, generic
 rationale/                   why each rule exists: research findings, lessons, sources
 harness/                     Python: parsers, schemas, telemetry (phase 1)
 dashboard/                   Python: collect, compute, render (phase 4)
-scripts/                     survey.py (inventory and dispatcher), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins); the verification harness and runtime adapters follow (phase 2)
+scripts/                     survey.py (inventory and dispatcher), collect.py (completion from artifacts), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins); the verification harness and runtime adapters follow (phase 2)
 tests/                       hook behaviour tests, lint tests; later the schema tests, red-team corpus, fixture repository
 evals/                       claude plugin eval cases
 docs/design/                 dated design notes, frozen
@@ -50,4 +50,4 @@ docs/design/                 dated design notes, frozen
 
 ## Status
 
-0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.
+0.5.0 adds allocation records, handoffs and the collector (chapter 19); 0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.

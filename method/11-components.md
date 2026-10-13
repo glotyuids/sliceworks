@@ -47,3 +47,9 @@ Each component names the failure it prevents; the retrospective removes componen
 | the `start` dispatcher | starting the wrong phase; an owner who must know the method to begin |
 | the intake pipeline and `intake/<id>.md` | features entering by chat without analysis; analysis without a record |
 | the skills-library binding (survey detection, phase table, pack recommendations) | the life cycle restating engineering how-tos; a project running a phase without the skill that knows how |
+| allocation records | dispatch without a recorded worker, worktree, base, allowed paths and completion condition; obsolete tasks resumed after a compaction |
+| handoffs committed on the branch | completion that exists only in a message a runtime may not deliver |
+| the collector | status requests and acknowledgements as prerequisites; a chat's activity mistaken for a writer's or a test's |
+| execution identity (full commits, assigned bases, verified pins, snapshot preflight) | a result from another base or checkout certifying the current candidate; companions created from an invalid snapshot |
+| compiled, executed, runtime-verified as separate states; `NOT_RUN` for launch and cache failures | a test-only build read as production compiling; a sandbox denial read as a product red; the same infrastructure limit rediscovered by every writer |
+| bounded repair with a stated reason for every repeat | repair rounds that produce artifacts instead of delivery |

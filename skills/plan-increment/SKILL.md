@@ -4,7 +4,7 @@ description: Plan one increment before it starts - surface map, reuse audit, dec
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Plan an increment

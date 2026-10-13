@@ -24,6 +24,10 @@
 - **Row kind**: what a ledger row's check proves: scenario, criterion, claim, experiment, decision, spec, gate, release, probe, eval.
 - **Survey**: the deterministic inventory of a project (stack, process systems, agent configuration, phase coverage) that the dispatcher reads.
 - **Importer**: a reader of one existing format (Spec Kit, OpenSpec, decision records, plans, tests, boards) that proposes the method's artifacts.
+- **Allocation**: the committed record of one dispatch: worker, execution handles, worktree, branch, full base commit, allowed paths, completion condition, required artifacts.
+- **Handoff**: the file a worker commits on its branch when its allocation ends: result, head, base, verification, blockers, next bounded action.
+- **Collector**: the script that reads allocations, handoffs, branch heads, logs and process handles and reports completion without a model turn.
+- **Execution identity**: the full commit, checkout and assigned base a result certifies.
 - **Skills library**: `engineering-skills`, the owner's packs of Agent Skills; the method calls them by name per phase and never restates them.
 - **Intake**: the pipeline a chat request passes through: capture, business analysis, system analysis, scenario adaptation, decisions, placement.
 - **Money ledger**: `metrics/money.jsonl`, paid runs against an authorization, enforced by the money guard.

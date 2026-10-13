@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/glotyuids/sliceworks/schemas/allocation.schema.json",
+  "title": "sliceworks allocation record",
+  "description": "One dispatch of one role to one worker (method chapter 19). Committed by the coordinator under <state-dir>/allocations/<id>.json before the worker starts; the unit of recovery after a compaction; what the collector reads.",
+  "type": "object",
+  "required": ["id", "slice", "role", "worker", "worktree", "branch", "base", "allowed_paths", "completion", "required_artifacts", "opened", "state"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string", "pattern": "^alloc-[A-Za-z0-9._-]+$"},
+    "slice": {"type": "string"},
+    "role": {"type": "string", "enum": ["slice-implementer", "code-reviewer", "named-risk-reviewer", "contract-author", "architect", "researcher", "efficiency-reviewer", "auditor", "other"]},
+    "worker": {"type": "object", "required": ["kind", "runtime"], "additionalProperties": false,
+      "properties": {"kind": {"type": "string", "enum": ["subagent", "chat", "cli"]}, "runtime": {"type": "string"}, "id": {"type": ["string", "null"], "description": "agent id, thread id or session id"}}},
+    "execution": {"type": "object", "additionalProperties": false,
+      "properties": {"pid_file": {"type": ["string", "null"]}, "handles": {"type": "array", "items": {"type": "string"}}, "log_dir": {"type": ["string", "null"], "description": "where the worker's tier logs land, relative to the repository root"}}},
+    "worktree": {"type": "string", "description": "path relative to the repository root, or absolute"},
+    "branch": {"type": "string"},
+    "base": {"type": "string", "pattern": "^[0-9a-f]{40}$", "description": "the full commit the work is built on; a stacked or companion base is still a full commit"},
+    "base_kind": {"type": "string", "enum": ["integration", "stacked", "companion"], "default": "integration"},
+    "allowed_paths": {"type": "array", "items": {"type": "string"}},
+    "completion": {"type": "string", "minLength": 1},
+    "required_artifacts": {"type": "array", "items": {"type": "string", "enum": ["handoff", "tier-log", "review", "plan", "contract", "report"]}},
+    "message_ref": {"type": ["string", "null"], "description": "the brief or findings file the dispatch pointed at"},
+    "opened": {"type": "string", "format": "date-time"},
+    "state": {"type": "string", "enum": ["open", "stopped", "collected", "closed"]},
+    "note": {"type": "string"}
+  }
+}

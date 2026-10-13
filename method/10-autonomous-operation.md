@@ -32,7 +32,7 @@ A project extends the list in its configuration; it never shortens it.
 
 ## Two runtimes
 
-The method does not depend on one host. Agent profiles are the source; a sync script renders them to the second runtime's format and a parity check in T0 fails on drift. Hooks reach the second runtime through a shim that maps its hook input to the same body. Roles are set by the launcher there, never inferred from a prompt. The rules that differ between hosts live in one adapter document per runtime, never in the method.
+The method does not depend on one host, and it does not assume the host delivers completions: allocation records, handoffs and the collector (chapter 19) make completion readable in any runtime, including one where a worker is a native chat plus a CLI session plus a long test with three lifetimes. Agent profiles are the source; a sync script renders them to the second runtime's format and a parity check in T0 fails on drift. Hooks reach the second runtime through a shim that maps its hook input to the same body. Roles are set by the launcher there, never inferred from a prompt. The rules that differ between hosts live in one adapter document per runtime, never in the method.
 
 ## Known limits
 

@@ -4,7 +4,7 @@ description: Write or update the sliceworks design artifacts from decisions and 
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Design: the acceptance contract and the design surfaces

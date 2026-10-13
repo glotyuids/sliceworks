@@ -4,7 +4,7 @@ description: Take a request typed in chat through the sliceworks intake pipeline
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.4.0
+  version: 0.5.0
 ---
 
 # Intake: from a request to rows

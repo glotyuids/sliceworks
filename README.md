@@ -73,6 +73,10 @@ A product moves through named **milestones** (MVP is one name among others). Eac
 
 `/sliceworks:start` looks at the project and runs what is next. A blank repository is adopted; a newly adopted one is surveyed (stack, commands, the specifications, decisions, plans and boards it already has, its agent configuration); a project with existing specifications or decision records has them imported before anything is written from scratch; an idea opens a research round; scenarios without rows go to design; rows without a brief go to increment planning; a running project resumes; a finished milestone goes to acceptance. A request typed in chat ("add a feature", "users asked for") goes through `intake`: business analysis, system analysis, scenario adaptation, decisions, placement. See `method/17-entry-and-intake.md`.
 
+## Completion is read, not received
+
+A worker may be a subagent whose completion is delivered, or a native chat plus a CLI session plus a long test with three lifetimes. The method does not depend on the difference: every dispatch is an **allocation record** (worker, worktree, branch, full base commit, allowed paths, completion condition), every worker ends by committing a **handoff** on its branch, and the **collector** reads completion from process handles, tier logs, branch heads and handoffs. No acknowledgement or status request is ever a prerequisite; a message to a worker counts as a dispatch for the budget. See `method/19-allocation-and-completion.md`.
+
 ## With the skills library
 
 `sliceworks` owns the life cycle; [`engineering-skills`](https://github.com/glotyuids/engineering-skills) owns how each engineering thing is done. The survey detects which packs a project has, recommends the rest for its stack, and each phase names the library skill it calls (`review-plan` at design, `incident-response` at operate, the infra pack at release) and what happens when it is absent. See `method/18-skills-library.md`.
@@ -96,7 +100,7 @@ A product moves through named **milestones** (MVP is one name among others). Eac
 
 ## Status
 
-0.4.2: Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.5.0: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

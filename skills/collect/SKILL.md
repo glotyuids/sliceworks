@@ -1,0 +1,23 @@
+---
+name: collect
+description: Read what every worker has actually finished without asking anyone - run the sliceworks collector over the open allocations and report, per allocation, RUNNING, DONE, BLOCKED, HOLD, STALE-HANDOFF or STOPPED-NO-HANDOFF from process handles, branch heads, tier logs and committed handoffs; then take the next already-authorized bounded action. Use when the user says "what finished", "collect results", "did the slice return", "is the writer still running", "check the chats", or whenever the coordinator would otherwise send a status request.
+license: Apache-2.0
+metadata:
+  source: glotyuids/sliceworks
+  version: 0.5.0
+---
+
+# Collect: completion from artifacts
+
+Method: `method/19-allocation-and-completion.md`. Script: `${CLAUDE_PLUGIN_ROOT}/scripts/collect.py`.
+
+1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/collect.py" --root "$PWD"`. One line per open allocation, from evidence alone; the script writes nothing and sends nothing.
+2. Act on each state, without a message to the worker:
+   - `RUNNING`: ongoing work; a live test or a resource queue is not a stall. Do nothing.
+   - `DONE`: read the handoff, start the already-authorized next step (review, then merge), set the allocation `collected`.
+   - `BLOCKED` or `HOLD`: read the handoff's blockers and the default the worker would apply; decide (class B) or route to the owner (A1); re-dispatch from the branch with a new allocation when unblocked.
+   - `STALE-HANDOFF`: the worker committed after writing the handoff; read the branch log; if the worker is gone, treat the last commit as a checkpoint and run the required gate yourself (chapter 19, execution identity).
+   - `STOPPED-NO-HANDOFF`: nothing runs and nothing was written. Inspect the worktree (`git status`, `git log`), the stop-gate output and the worker's last message **read-only** before anything else; then either run the authorized gate on the checkpoint or re-dispatch with a fresh allocation. Never send "are you done".
+   - `MISSING-WORKTREE`: recreate from the allocation's base and branch after the snapshot preflight, or close the allocation with a note.
+3. Record what changed in `.run/coordinator-session.md` (allocation states, handles) and in `STATE.md`.
+4. A message to a worker is a dispatch for budget purposes: at a dispatch hold, collect and do not wake anyone.
