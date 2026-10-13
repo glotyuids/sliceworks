@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.5.0
+  version: 0.6.0
 ---
 
 # Adopt sliceworks in a project
@@ -37,7 +37,7 @@ One message, every remaining question, with your best guess pre-filled so the us
 From `${CLAUDE_PLUGIN_ROOT}/templates/`, substituting the answers:
 
 - `.sliceworks/config.env` from `config.env` (every `SW_*` the hooks read).
-- `<state-dir>/`: `FEATURES.json` (an empty array, or rows the user already has), `STATE.md`, `BACKLOG.md`, `PROGRESS.md`, `DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `MILESTONES.md`, `SCENARIOS.json` (empty array), `SPARK.md`, `ARCHITECTURE.md`, `INDEX.md`, `INCIDENTS.md`, `FEEDBACK.md`, `START.md`, `contracts/`, `slices/`, `plans/`, `rounds/`, `threat-models/`, `accept/`, `allocations/`, `handoffs/`, `intake/`, `retros/PROPOSALS.md`, `retros/proposals/`, `metrics/` (empty `usage.jsonl`, `tiers.jsonl`, `money.jsonl`), `demos/`, `evals/README.md`, `specs/README.md` at the repository root. Omit the files of phases the profile does not run (`SW_PHASES`).
+- `<state-dir>/`: `FEATURES.json` (an empty array, or rows the user already has), `STATE.md`, `BACKLOG.md`, `PROGRESS.md`, `DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `MILESTONES.md`, `SCENARIOS.json` (empty array), `SPARK.md`, `ARCHITECTURE.md`, `INDEX.md`, `INCIDENTS.md`, `FEEDBACK.md`, `START.md`, `contracts/`, `slices/`, `plans/`, `rounds/`, `threat-models/`, `accept/`, `allocations/`, `handoffs/`, `intake/`, `refocus/`, `archive/`, `retros/PROPOSALS.md`, `retros/proposals/`, `metrics/` (empty `usage.jsonl`, `tiers.jsonl`, `money.jsonl`), `demos/`, `evals/README.md`, `specs/README.md` at the repository root. Omit the files of phases the profile does not run (`SW_PHASES`).
 - `.claude/rules/sliceworks.md` from `rules.md` (the rules for every agent), and the `AGENTS.fragment.md` block appended to `AGENTS.md` (create `AGENTS.md` and a `CLAUDE.md` containing `@AGENTS.md` if neither exists).
 - `.claude/settings.json`: merge the keys of `settings.fragment.json` (permissions, environment, subagent model, cache TTL, auto-continue, worktree base, `enabledPlugins`). Show the diff before writing. Do not copy any hook into settings: the plugin's hooks already run, and a duplicate runs twice.
 - `.gitignore`: add `<state-dir>/STATUS.md`, `<state-dir>/STOP`, `.run/`, `<outputs>/`.

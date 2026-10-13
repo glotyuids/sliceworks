@@ -26,7 +26,7 @@ One file, `DECISIONS.md`, across all phases. Two entry kinds.
 
 ```text
 ### D-<n> · <title>
-- <date> · <origin: round <n> | review <slice> | owner answer | retrospective <n>> · class <A1 | A2 | M | B> · **<status>** · refines D-<m> · supersedes D-<k> · veto by <date>
+- <date> · <origin: round <n> | review <slice> | owner answer | retrospective <n>> · class <A1 | A2 | M | B> · **<status>** · refines D-<m> · supersedes D-<k> · veto by <date> [· pivot]
 - Decision: <one paragraph>
 - Options considered: <for A2 and B, a table of the options with complexity, cost, scalability, team familiarity, operational impact and migration risk, the chosen one marked and each loser with the reason it lost>
 - Default applied and consequence of reversing: <for A2 and B>
@@ -38,7 +38,7 @@ One file, `DECISIONS.md`, across all phases. Two entry kinds.
 
 A decision that names no losing option was not decided, it was assumed; the options table is what the architect's procedure (chapter 14) produces and what a later reader needs to reopen a decision honestly.
 
-Classes: **A1** human-only (never defaulted; the Q stays open and the dependent rows are `blocked_on_human`); **A2** product default applied by the coordinator with a 48-hour veto window; **M** method and process; **B** technical, one-day veto. Statuses: `open`, `recommended`, `defaulted`, `decided`, `vetoed`, `superseded`. A decision is revisited only through a new decision that supersedes it. Long-form technical decisions may also have an architecture decision record in the project's format; the D entry links to it.
+Classes: **A1** human-only (never defaulted; the Q stays open and the dependent rows are `blocked_on_human`); **A2** product default applied by the coordinator with a 48-hour veto window; **M** method and process; **B** technical, one-day veto. Statuses: `open`, `recommended`, `defaulted`, `decided`, `vetoed`, `superseded`. A decision is revisited only through a new decision that supersedes it. A decision that re-plans a milestone (`refocus`, chapter 14) carries the marker `pivot` on its metadata line; the design-doc lint reads the newest pivot's date and fails every current document in the index not reviewed since. Long-form technical decisions may also have an architecture decision record in the project's format; the D entry links to it.
 
 `OWNER-DECISIONS.md` is no longer a file the coordinator writes: it is the dashboard's rendering of A2 entries with open veto clocks. Prevents: silent defaults; the same question answered twice differently; a decision without its evidence; a ready slice blocked on a question nobody owns.
 

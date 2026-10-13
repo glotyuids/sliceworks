@@ -31,3 +31,6 @@
 - **Skills library**: `engineering-skills`, the owner's packs of Agent Skills; the method calls them by name per phase and never restates them.
 - **Intake**: the pipeline a chat request passes through: capture, business analysis, system analysis, scenario adaptation, decisions, placement.
 - **Money ledger**: `metrics/money.jsonl`, paid runs against an authorization, enforced by the money guard.
+- **Pivot**: a change to the milestone promise, a riskiest assumption, an invariant or a scenario of the current milestone; recorded as a D entry with the `pivot` marker and handled by `refocus`, never placed as a feature.
+- **Refocus audit**: the read-only walk of every document, scenario, row, contract, spec and threat model against a pivot decision, recorded in `refocus/<D-id>.md` with a verdict per item: keep, amend or archive.
+- **Archived**: a living document a pivot retired: moved to `archive/<date>-<name>`, kept in the index with its decision, never edited or referenced by a brief or a contract.

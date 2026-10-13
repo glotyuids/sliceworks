@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+- Pivot and refocus (method chapter 14, with chapters 13 and 17): the **trigger** that separates a feature from a pivot (a change to the milestone promise, a riskiest assumption, an invariant, or a scenario of the current milestone), answered by the business analysis in one line (`Pivot: yes | no`) and branched on by intake; the **refocus audit**, in which the two read-only analysts walk every document, scenario, row, contract, spec and threat model against the pivot decision and the coordinator records keep, amend or archive per item in `refocus/<D-id>.md` (template `refocus.md`); **archiving** for living documents (`git mv` to `archive/<date>-<name>`, the `INDEX.md` row kept with status `archived (D-n)`, specs superseded in place, scenarios thinned, contracts retired); `refocus` re-runs `design` for every surface marked amend, citing the pivot D, before re-mapping and re-planning; the `pivot` marker on a D entry's metadata line.
+- Lint: `check-design-docs.py` gains two checks: after the newest pivot decision every current `INDEX.md` row carries a review date at or after it (archived rows exempt), and no brief or contract references an archived document. Four tests.
+- Agents: `business-analyst` and `system-analyst` gain an audit mode and the analyst answers whether a request is a pivot. Skills: `refocus` (eight steps), `intake`, `design`, `adopt` (`refocus/` and `archive/`). Templates: `refocus.md` new; `INDEX.md`, `DECISIONS.md`, `intake.md`, `specs-README.md`, `rules.md`. Components table: two rows. Glossary: pivot, refocus audit, archived.
+
 ## 0.5.1
 
 - README: install, update and other-runtime sections under their own headers (Claude Code, Update, Codex, Other runtimes); the CLI form is documented because the desktop app's `/plugin` slash form opens the panel instead of running the subcommand.

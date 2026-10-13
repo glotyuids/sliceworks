@@ -99,7 +99,7 @@ A product moves through named **milestones** (MVP is one name among others). Eac
 
 ## Starting
 
-`/sliceworks:start` looks at the project and runs what is next. A blank repository is adopted; a newly adopted one is surveyed (stack, commands, the specifications, decisions, plans and boards it already has, its agent configuration); a project with existing specifications or decision records has them imported before anything is written from scratch; an idea opens a research round; scenarios without rows go to design; rows without a brief go to increment planning; a running project resumes; a finished milestone goes to acceptance. A request typed in chat ("add a feature", "users asked for") goes through `intake`: business analysis, system analysis, scenario adaptation, decisions, placement. See `method/17-entry-and-intake.md`.
+`/sliceworks:start` looks at the project and runs what is next. A blank repository is adopted; a newly adopted one is surveyed (stack, commands, the specifications, decisions, plans and boards it already has, its agent configuration); a project with existing specifications or decision records has them imported before anything is written from scratch; an idea opens a research round; scenarios without rows go to design; rows without a brief go to increment planning; a running project resumes; a finished milestone goes to acceptance. A request typed in chat ("add a feature", "users asked for") goes through `intake`: business analysis, system analysis, scenario adaptation, decisions, placement. See `method/17-entry-and-intake.md`. A request that changes the milestone promise, a riskiest assumption, an invariant or a scenario of the current milestone is a pivot, not a feature: `refocus` pauses the slices, records the decision, audits every document, scenario, row, contract and spec against it, archives what the new focus contradicts, re-runs the design and re-plans. See `method/14-design-and-plan.md`.
 
 ## Completion is read, not received
 
@@ -128,7 +128,7 @@ A worker may be a subagent whose completion is delivered, or a native chat plus 
 
 ## Status
 
-0.5.1: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, twenty skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.6.0: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, twenty skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

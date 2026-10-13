@@ -1,6 +1,6 @@
 # Intake <id> · <request in five words>
 
-<!-- sliceworks 0.3.0. One file per request (method chapter 17). Written by the intake skill from the analysts' outputs. -->
+<!-- sliceworks 0.6.0. One file per request (method chapter 17). Written by the intake skill from the analysts' outputs. -->
 
 Captured: <date> · from: owner chat · FEEDBACK id: <F-n> · shape: idea | feature | change | defect | question
 
@@ -14,6 +14,7 @@ Captured: <date> · from: owner chat · FEEDBACK id: <F-n> · shape: idea | feat
 - Riskiest assumption:
 - Class A questions:
 - Replaces or conflicts with:
+- Pivot: yes | no, because <it changes the milestone promise, a riskiest assumption, an invariant or a scenario of the current milestone | it adds inside the promise>
 - Recommendation: now | next increment | later milestone | not at all, because
 
 ## System analysis
@@ -32,4 +33,4 @@ Captured: <date> · from: owner chat · FEEDBACK id: <F-n> · shape: idea | feat
 |---|---|---|---|
 
 ## Placement
-<increment or milestone, slice id, brief path, or the refocus decision; the one-message report sent to the owner>
+<increment or milestone, slice id, brief path; or, for a pivot, the refocus D entry and the path of refocus/<D-id>.md; the one-message report sent to the owner>

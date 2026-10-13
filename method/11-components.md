@@ -53,3 +53,5 @@ Each component names the failure it prevents; the retrospective removes componen
 | execution identity (full commits, assigned bases, verified pins, snapshot preflight) | a result from another base or checkout certifying the current candidate; companions created from an invalid snapshot |
 | compiled, executed, runtime-verified as separate states; `NOT_RUN` for launch and cache failures | a test-only build read as production compiling; a sandbox denial read as a product red; the same infrastructure limit rediscovered by every writer |
 | bounded repair with a stated reason for every repeat | repair rounds that produce artifacts instead of delivery |
+| the pivot trigger, the refocus audit and `refocus/<D-id>.md` | a pivot placed as a feature; a pivot that leaves the design documents, scenarios or contracts describing the old product; an audit that exists only in the coordinator's head |
+| archived documents and the pivot-review lint | a current document that contradicts an active decision; a brief or contract built on a document the pivot retired |
