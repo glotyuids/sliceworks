@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- README: install, update and other-runtime sections under their own headers (Claude Code, Update, Codex, Other runtimes); the CLI form is documented because the desktop app's `/plugin` slash form opens the panel instead of running the subcommand.
+- `scripts/release.sh`: one command bumps the manifest and README version, runs the hook and Python tests and the strict validator, commits, tags `v<version>` and pushes; `--marketplace <path>` also bumps the entry in the library's marketplace.
+
 ## 0.5.0
 
 - Allocation and completion (method chapter 19, from the first run's Codex coordinator findings): actors with separate lifetimes (coordinator, worker as subagent, chat or CLI session, execution, verification run); the committed **allocation record** (worker, handles, worktree, branch, full base commit, allowed paths, completion condition, required artifacts) as the unit of dispatch and of recovery after a compaction; the **handoff** a worker commits on its branch as the record of completion, with CANDIDATE, BLOCKED and HOLD as pointers to it; the **collector** (`scripts/collect.py`) that reads completion from pids, logs, branch heads and handoffs; no acknowledgement or status request is ever a prerequisite; messages to workers count as dispatches for the budget holds; execution identity rules (full commits, assigned bases, verified pins, snapshot preflight before worktrees); compiled, executed and runtime-verified as separate states with `NOT_RUN` for launch and cache failures; configuration loading never owns execution; approval, preparation and proof kept apart; bounded repair with a stated reason for every repeat. Chapters 6, 7, 8 and 10 reconciled.

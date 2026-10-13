@@ -17,19 +17,43 @@ it prevents; a component whose failure stops occurring is removed at the retrosp
 
 ## Install
 
-Claude Code, in the project you want to run this way:
+### Claude Code
 
-```text
-/plugin marketplace add glotyuids/engineering-skills
-/plugin install sliceworks@engineering-skills
-/sliceworks:adopt
+From the terminal, once per machine (in the desktop app the `/plugin` slash form opens the plugin panel instead of running the subcommand, so use the CLI):
+
+```bash
+claude plugin marketplace add glotyuids/engineering-skills
 ```
+
+```bash
+claude plugin install sliceworks@engineering-skills --scope user
+```
+
+Then, in a session in the project you want to run this way, `/sliceworks:start`. Use `--scope project` to commit the install into the project's `.claude/settings.json` so teammates are prompted for it.
 
 Local development or a checkout of this repository:
 
 ```bash
 claude --plugin-dir /path/to/sliceworks
 ```
+
+### Update (Claude Code)
+
+A release bumps the version in the plugin manifest; your install stays on the cached version until it is updated. One command:
+
+```bash
+claude plugin update sliceworks@engineering-skills
+```
+
+Then `/reload-plugins` or a new session. To make it automatic, mark the marketplace in `~/.claude/settings.json`; Claude Code then checks after the first message of a session and installs new versions on its own:
+
+```json
+"extraKnownMarketplaces": {
+  "engineering-skills": { "source": { "source": "github", "repo": "glotyuids/engineering-skills" }, "autoUpdate": true }
+}
+```
+
+If the library's marketplace file itself changed (a new entry, a new source), refresh it first with `claude plugin marketplace update engineering-skills`. Maintainers release with `scripts/release.sh <version>` (tests, validation, commit, tag, push, and the marketplace entry).
 
 ### Codex
 
@@ -63,7 +87,11 @@ sliceworks/scripts/install.sh --user --tools codex
 
 The script copies the skills, never symlinks, never overwrites (`--force` to replace), and keeps the provenance stamps the `update` skill compares. `--tools codex,claude` also installs the agents into `.claude/agents` for a Claude Code setup without the plugin; `--tools cursor` targets `.cursor`.
 
-**What Codex gets today.** The nineteen skills, and the method, templates and schemas they read. The hooks and the subagent profiles are Claude Code mechanisms; their Codex counterparts (the hook shim, the session guard, agents generated as `.codex/agents/*.toml`, `templates/codex-config.toml`) are the dual profile and arrive with the harness scripts (phase 2 of the plan).
+**What Codex gets today.** The twenty skills, and the method, templates and schemas they read. The hooks and the subagent profiles are Claude Code mechanisms; their Codex counterparts (the hook shim, the session guard, agents generated as `.codex/agents/*.toml`, `templates/codex-config.toml`) are the dual profile and arrive with the harness scripts (phase 2 of the plan). To update a copy install, re-run `install.sh` with `--force`, or run the `update` skill, which replaces stale copies and keeps hand-edited ones.
+
+### Other runtimes
+
+Cursor, Copilot and Gemini read the Agent Skills format too: `scripts/install.sh /path/to/project --tools cursor` (or `copilot`, `gemini`) copies the skills into the directory each one reads, and `--user` installs them for every project.
 
 ## The life cycle
 
@@ -100,7 +128,7 @@ A worker may be a subagent whose completion is delivered, or a native chat plus 
 
 ## Status
 
-0.5.0: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.5.1: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, twenty skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

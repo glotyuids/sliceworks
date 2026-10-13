@@ -23,7 +23,7 @@ is public under Apache-2.0: no hostnames, no local paths, no personal data, no p
   ignores those for plugin agents. Role enforcement lives in `hooks/hooks.json`, keyed on the
   `agent_type` field of the hook input.
 - Tests are never removed or weakened to pass. `claude plugin validate --strict .` must pass.
-- Versions are semantic; bump `.claude-plugin/plugin.json` and `CHANGELOG.md` on every release.
+- Versions are semantic. Write the `## <version>` section in `CHANGELOG.md` first, then run `scripts/release.sh <version> "<summary>" --marketplace <path-to-engineering-skills>`: it bumps the manifest, runs every test and the strict validator, commits, tags and pushes, and keeps the library's marketplace entry in step. Users receive it through `claude plugin update` or the marketplace's auto-update.
 - Install into projects by copying with a provenance stamp (`metadata.source`,
   `metadata.version` in skills; a `# sliceworks <version>` header in scripts and templates);
   improvements flow upstream first.
@@ -42,7 +42,7 @@ method/                      the process, generic
 rationale/                   why each rule exists: research findings, lessons, sources
 harness/                     Python: parsers, schemas, telemetry (phase 1)
 dashboard/                   Python: collect, compute, render (phase 4)
-scripts/                     survey.py (inventory and dispatcher), collect.py (completion from artifacts), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins); the verification harness and runtime adapters follow (phase 2)
+scripts/                     survey.py (inventory and dispatcher), collect.py (completion from artifacts), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins), release.sh (the release in one command); the verification harness and runtime adapters follow (phase 2)
 tests/                       hook behaviour tests, lint tests; later the schema tests, red-team corpus, fixture repository
 evals/                       claude plugin eval cases
 docs/design/                 dated design notes, frozen
