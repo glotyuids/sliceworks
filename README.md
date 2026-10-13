@@ -31,9 +31,39 @@ Local development or a checkout of this repository:
 claude --plugin-dir /path/to/sliceworks
 ```
 
-Codex and other runtimes read the same `AGENTS.md` and the skills under `.agents/skills`; the
-`adopt` skill (or `scripts/install.sh`, phase 2) copies them. See `method/10-autonomous-operation.md`
-and `scripts/runtimes/codex/`.
+### Codex
+
+Codex reads the same `AGENTS.md` and loads skills from `.agents/skills` (project) or `~/.agents/skills` (user). Two ways in.
+
+**As a Codex plugin.** This repository carries `.agents/plugins/marketplace.json`, the file Codex reads for a marketplace, and Codex falls back to `.claude-plugin/plugin.json` as the plugin manifest. Add to `~/.codex/config.toml` (or the project's `.codex/config.toml`):
+
+```toml
+[marketplaces.sliceworks]
+source_type = "git"
+source = "https://github.com/glotyuids/sliceworks.git"
+
+[plugins."sliceworks@sliceworks"]
+enabled = true
+```
+
+Then restart Codex; the skills appear as `sliceworks` skills. This path is written from the Codex source and from a repository that ships both marketplace files; it has not been exercised on this machine, which has no Codex CLI, so treat the first run as a check.
+
+**By copy.** From a clone, into a project:
+
+```bash
+git clone https://github.com/glotyuids/sliceworks
+sliceworks/scripts/install.sh /path/to/project --tools codex
+```
+
+or for every project, user scope:
+
+```bash
+sliceworks/scripts/install.sh --user --tools codex
+```
+
+The script copies the skills, never symlinks, never overwrites (`--force` to replace), and keeps the provenance stamps the `update` skill compares. `--tools codex,claude` also installs the agents into `.claude/agents` for a Claude Code setup without the plugin; `--tools cursor` targets `.cursor`.
+
+**What Codex gets today.** The nineteen skills, and the method, templates and schemas they read. The hooks and the subagent profiles are Claude Code mechanisms; their Codex counterparts (the hook shim, the session guard, agents generated as `.codex/agents/*.toml`, `templates/codex-config.toml`) are the dual profile and arrive with the harness scripts (phase 2 of the plan).
 
 ## The life cycle
 
@@ -66,7 +96,7 @@ A product moves through named **milestones** (MVP is one name among others). Eac
 
 ## Status
 
-0.4.1: bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.4.2: Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, nineteen skills, templates and schemas validate; the survey script, the hook tests, the lint tests and the survey tests pass. The verification harness, the Python library and the dashboard generator follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

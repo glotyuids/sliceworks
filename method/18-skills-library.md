@@ -38,6 +38,10 @@ The Anthropic knowledge-work "Engineering" plugin's `architecture` and `system-d
 
 Two rules keep the binding cheap. A phase skill names the library skill and the section it relies on; it never restates its content. When a library skill is absent the phase still runs, with the fallback in the last column, and the survey keeps recommending the pack until it is installed or the owner records a decision not to.
 
+## Other runtimes
+
+Codex reads `.agents/skills` and its own marketplace file, `.agents/plugins/marketplace.json`, which this repository carries so that the package installs as a Codex plugin; `scripts/install.sh` copies the skills for any runtime without plugins, never by symlink, keeping the provenance stamps. The hooks and agent profiles are Claude Code mechanisms; the dual profile (chapter 10) carries their Codex counterparts.
+
 ## Versions
 
 The survey records each installed skill's version. The library's own drift check (`scripts/check-drift.sh`) and its update procedure keep the copies current; the `update` skill of this package runs them when the project has a clone of the library and reports the result next to its own.

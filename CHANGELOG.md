@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- Codex: the repository carries `.agents/plugins/marketplace.json`, so Codex can install it as a plugin from `~/.codex/config.toml` (`[marketplaces.sliceworks]` with a git source, `[plugins."sliceworks@sliceworks"]`); `scripts/install.sh` copy-installs the skills (and agents, for Claude Code without the plugin) into a project or user scope for Codex, Cursor and others. README documents both paths and what Codex gets today.
+
 ## 0.4.1
 
 - Design reasoning (review of 2026-10-13, `docs/design/2026-10-13-anthropic-engineering-plugins-review.md`): the architect profile gains a six-step procedure before the artifacts (requirements, map, options with a dimension table, deep dive, scale and reliability, trade-offs); class A2 and B decisions carry an Options considered table; the release checklist gains the notice and canary rows; briefs name the test type per component; debt candidates in the feedback register carry a priority; chapter 18 lists two optional bindings to official-catalog plugins (`feature-dev:code-architect`, `system-design-skills`).

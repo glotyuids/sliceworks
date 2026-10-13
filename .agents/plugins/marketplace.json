@@ -1,0 +1,11 @@
+{
+  "name": "sliceworks",
+  "plugins": [
+    {
+      "name": "sliceworks",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE" },
+      "category": "Engineering"
+    }
+  ]
+}

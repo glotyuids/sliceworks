@@ -31,7 +31,8 @@ is public under Apache-2.0: no hostnames, no local paths, no personal data, no p
 ## Layout
 
 ```text
-.claude-plugin/plugin.json   plugin manifest
+.claude-plugin/plugin.json   plugin manifest (Claude Code; Codex reads it as a fallback)
+.agents/plugins/marketplace.json  the Codex marketplace file: this repository lists itself as a plugin
 agents/                      coordinator-facing subagent profiles
 skills/                      start, adopt, survey, prepare, intake, kickoff, discover, decide, design, plan-increment, brief, refocus, resume, retro, accept, release, operate, learn, update
 hooks/                       hooks.json plus the hook bodies (POSIX sh, jq)
@@ -41,7 +42,7 @@ method/                      the process, generic
 rationale/                   why each rule exists: research findings, lessons, sources
 harness/                     Python: parsers, schemas, telemetry (phase 1)
 dashboard/                   Python: collect, compute, render (phase 4)
-scripts/                     survey.py (inventory and dispatcher), check-design-docs.py (lints); the verification harness and runtime adapters follow (phase 2)
+scripts/                     survey.py (inventory and dispatcher), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins); the verification harness and runtime adapters follow (phase 2)
 tests/                       hook behaviour tests, lint tests; later the schema tests, red-team corpus, fixture repository
 evals/                       claude plugin eval cases
 docs/design/                 dated design notes, frozen
