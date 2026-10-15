@@ -201,6 +201,12 @@ class HardenedDispatch(Project):
         self.assertIn("TIERS=" + str(metrics / "tiers.jsonl"), self.argv())
         roots = next(arg for arg in self.argv() if arg.startswith("sandbox_workspace_write.writable_roots="))
         self.assertNotIn("docs/process", roots)
+        grants = json.loads(roots.split("=", 1)[1])
+        gd = git(self.wt, "rev-parse", "--absolute-git-dir")
+        self.assertEqual(grants, [gd, str(self.root / ".git/objects"),
+                                 str(self.root / ".git/refs/heads/slice/07"), str(self.root / ".git/refs/heads/slice/07.lock"),
+                                 str(self.root / ".git/logs/refs/heads/slice/07"), str(self.root / ".git/logs/refs/heads/slice/07.lock"),
+                                 str(self.root / "outputs"), str(self.root / ".run")])
         self.assertEqual((self.root / ".run/codex/alloc-slice-07-r1.thread").read_text().strip(), "th-123")
         self.assertTrue((self.root / ".run/slice-07.pid").read_text().strip().isdigit())
         self.assertTrue((self.root / ".run/codex/alloc-slice-07-r1.pid").exists())

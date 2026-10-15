@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sliceworks 0.8.1. The collector (method chapter 19): completion read from durable artifacts, never from a message.
+# sliceworks 0.8.2. The collector (method chapter 19): completion read from durable artifacts, never from a message.
 #   collect.py --root <repo> [--state-dir docs/process] [--json]
 # For every open or stopped allocation prints one line:
 #   ALLOC <id> <STATE> <detail>
@@ -13,10 +13,12 @@
 # Detection is read-only by default. --merge-worker-metrics imports staged rows as the coordinator; no message is sent.
 import argparse, json, os, pathlib, re, subprocess, sys
 import fcntl
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from safe_git import git_command
 
 
 def git(cwd, *args):
-    r = subprocess.run(["git", "-C", str(cwd), *args], capture_output=True, text=True, check=False)
+    r = subprocess.run(git_command("-C", cwd, *args), capture_output=True, text=True, check=False)
     return r.stdout.strip() if r.returncode == 0 else None
 
 

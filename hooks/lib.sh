@@ -1,10 +1,13 @@
-# sliceworks 0.8.1: shared helpers for the hooks. POSIX sh, needs jq.
+# sliceworks 0.8.2: shared helpers for the hooks. POSIX sh, needs jq.
 # Sourced after `input="$(cat)"`. Every hook calls sw_load_config and exits 0 when it returns 1.
+
+# Repository configuration must never launch fsmonitor or hooks in an unsandboxed hook/launcher.
+sw_git() { command git -c core.fsmonitor= -c core.hooksPath=/dev/null "$@"; }
 
 sw_root() {
   # The main checkout root: CLAUDE_PROJECT_DIR, or the git common dir (a worktree's common dir is <main>/.git).
   local d="${CLAUDE_PROJECT_DIR:-$(pwd)}" c
-  c="$(git -C "$d" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  c="$(sw_git -C "$d" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
   case "$c" in */.git) printf '%s' "${c%/.git}"; return;; esac
   printf '%s' "$d" | sed -E 's#/\.claude/worktrees/.*$##'
 }
@@ -99,7 +102,7 @@ sw_roots() {
   printf '%s\n' "$SW_ROOT"
   [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ "$CLAUDE_PROJECT_DIR" != "$SW_ROOT" ] && printf '%s\n' "$CLAUDE_PROJECT_DIR"
   local c; c="$(sw_field '.cwd')"
-  if [ -n "$c" ]; then local t; t="$(git -C "$c" rev-parse --show-toplevel 2>/dev/null || true)"; [ -n "$t" ] && [ "$t" != "$SW_ROOT" ] && [ "$t" != "${CLAUDE_PROJECT_DIR:-}" ] && printf '%s\n' "$t"; fi
+  if [ -n "$c" ]; then local t; t="$(sw_git -C "$c" rev-parse --show-toplevel 2>/dev/null || true)"; [ -n "$t" ] && [ "$t" != "$SW_ROOT" ] && [ "$t" != "${CLAUDE_PROJECT_DIR:-}" ] && printf '%s\n' "$t"; fi
   return 0
 }
 
@@ -120,7 +123,7 @@ sw_agent_type() {
   t="$(sw_field '.agent_type')"; [ -n "$t" ] && [ "$t" != default ] && { printf '%s' "$t"; return 0; }
   [ -n "${SW_ROLE:-}" ] && { printf '%s' "$SW_ROLE"; return 0; }
   c="$(sw_field '.cwd')"; [ -n "$c" ] || c="$(pwd)"
-  g="$(git -C "$c" rev-parse --absolute-git-dir 2>/dev/null)" || return 0
+  g="$(sw_git -C "$c" rev-parse --absolute-git-dir 2>/dev/null)" || return 0
   [ -f "$g/sliceworks-role" ] && head -n 1 "$g/sliceworks-role" | tr -d '\r\n'
   return 0
 }

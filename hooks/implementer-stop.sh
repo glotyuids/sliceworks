@@ -1,5 +1,5 @@
 #!/bin/sh
-# sliceworks 0.8.1. Stop gate for slice implementers (method 3, step 4; method 5, T0): a turn may end only when T0
+# sliceworks 0.8.2. Stop gate for slice implementers (method 3, step 4; method 5, T0): a turn may end only when T0
 # is green in the implementer's worktree. Runs on SubagentStop (Claude Code subagents) and on Stop (a Codex worker
 # process, whose role comes from its launcher); the main session has no role and passes. Escapes: stop_hook_active (already blocked once this
 # turn), an explicit BLOCKED marker, an evidenced unavailable-command HOLD, the budget stop line, the kill switch.
@@ -8,7 +8,7 @@ sw_plugin_hooks_enabled || exit 0
 type="$(sw_agent_type)"; sw_is_role "$type" slice-implementer || exit 0
 [ "$(sw_field '.stop_hook_active')" = "true" ] && exit 0
 cwd="$(sw_field '.cwd')"; [ -n "$cwd" ] || cwd="$(pwd)"
-root="$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || echo "$cwd")"
+root="$(sw_git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || echo "$cwd")"
 case "$(head -n 1 "$root/.blocked" 2>/dev/null)" in BLOCKED*) exit 0;; esac
 case "$(sw_budget_verdict)" in stop*) exit 0;; esac
 [ -f "$SW_ROOT/$SW_STOP_FILE" ] && exit 0

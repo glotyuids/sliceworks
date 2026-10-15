@@ -15,6 +15,8 @@ the provider's usage window, behind a **kill switch** file.
 The method was extracted from a real run and is written so that every component names the failure
 it prevents; a component whose failure stops occurring is removed at the retrospective.
 
+**Codex security update:** versions 0.8.0 and 0.8.1 exposed the whole main `.git` directory to writers. Adopters must take **0.8.2** before using writer roots; see the [Git boundary and live probe](scripts/runtimes/codex/README.md#git-metadata-boundary-082).
+
 ## Install
 
 ### Claude Code
@@ -136,7 +138,7 @@ Every adopted project gets the same page: the first run's dashboard, generated b
 
 ## Status
 
-0.8.1: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, twenty skills, templates and schemas validate; the dashboard generator renders every adopted project's page; the survey script, the hook tests, the lint tests, the survey tests and the dashboard tests pass. The verification harness and the Python library follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
+0.8.2: allocation records, handoffs and the collector; Codex install paths and the copy installer; bound to the skills library, with a design procedure in the architect; the method book covers the whole life cycle and the entry sequence; the manifest, ten agents, hooks with a money guard, twenty skills, templates and schemas validate; the dashboard generator renders every adopted project's page; the survey script, the hook tests, the lint tests, the survey tests and the dashboard tests pass. The verification harness and the Python library follow (`docs/design/2026-10-12-extraction-analysis.md`, section 10; `docs/design/2026-10-12-lifecycle-coverage.md`, section 8).
 
 ## Licence
 

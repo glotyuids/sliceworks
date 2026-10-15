@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.8.1
+  version: 0.8.2
 ---
 
 # Adopt sliceworks in a project
@@ -65,3 +65,5 @@ If the survey found linked worktrees, live pid files or result-less logs, regist
 ## Report
 
 List: files written, files skipped because they existed, `TODO` fields left in `config.env` and `INVARIANTS.md`, the settings diff applied. Then run the `survey` skill to write `SURVEY.md`, and `start`, which picks the next phase (`prepare` when the survey found specifications, decisions or plans to import; `discover` for an idea; `kickoff` is the composed path for a known scope).
+
+Codex writer roots require sliceworks 0.8.2 or later: 0.8.0 and 0.8.1 exposed the main `.git`. Follow the adapter's Git metadata boundary and live probe before adopting a custom dispatcher. Copy `writer_roots.py` and the shared `scripts/safe_git.py` with the updated runtime and host readers; never grant the whole `.git` or `refs/heads` to a writer.

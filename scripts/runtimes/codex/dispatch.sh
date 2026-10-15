@@ -1,5 +1,5 @@
 #!/bin/sh
-# sliceworks 0.8.1. Start one Codex worker process for one allocation record (method 19), or resume it.
+# sliceworks 0.8.2. Start one Codex worker process for one allocation record (method 19), or resume it.
 #
 #   dispatch.sh <allocation-id>                    start: `codex exec` in the allocation's worktree, in the background
 #   dispatch.sh <allocation-id> --resume "<msg>"   resume the worker's thread with FINDINGS, a new brief or a HOLD answer
@@ -97,8 +97,10 @@ if [ "$resume_set" -eq 1 ]; then set -- "$@" -c "sandbox_mode=\"$sandbox\""; els
 [ -z "$model" ] || set -- "$@" -m "$model"
 [ -z "$effort" ] || set -- "$@" -c "model_reasoning_effort=\"$effort\""
 if [ "$sandbox" = workspace-write ]; then
-  # A worktree commits into the main checkout's git directory, and the tier runner logs under <outputs> and <run>.
-  set -- "$@" -c "sandbox_workspace_write.writable_roots=[\"$SW_ROOT/.git\",\"$SW_ROOT/$SW_OUTPUTS_DIR\",\"$SW_ROOT/$SW_RUN_DIR\"]"
+  # Grant only this worktree, objects and exact branch/reflog files (including their lock files).
+  prepare=""; [ "$dry" -eq 1 ] || prepare="--prepare"
+  roots="$(python3 "$here/writer_roots.py" "$SW_ROOT" "$wt" "$SW_OUTPUTS_DIR" "$SW_RUN_DIR" --integration "$SW_INTEGRATION_BRANCH" --branch "$(a .branch)" $prepare)"
+  set -- "$@" -c "sandbox_workspace_write.writable_roots=$roots"
   set -- "$@" -c "sandbox_workspace_write.network_access=false"
 fi
 set -f
@@ -122,7 +124,7 @@ if [ "$dry" -eq 1 ]; then
 fi
 command -v "$SW_CODEX_BIN" >/dev/null 2>&1 || exit 2
 mkdir -p "$dir" "$metrics" "$SW_ROOT/$SW_RUN_DIR/codex" "$(dirname "$pidf")"
-gd="$(git -C "$wt" rev-parse --absolute-git-dir 2>/dev/null || true)"
+gd="$(sw_git -C "$wt" rev-parse --absolute-git-dir 2>/dev/null || true)"
 case "$gd" in "$SW_ROOT/.git"|'') ;; *) printf '%s\n' "$role" > "$gd/sliceworks-role";; esac
 printf '%s\n' "$base.jsonl" > "$SW_ROOT/$SW_RUN_DIR/codex/$id.log"
 echo $$ >"$pidf"; echo $$ >"$SW_ROOT/$SW_RUN_DIR/codex/$id.pid"; rm -f "${pidf%.pid}.writer"; [ "$sandbox" = read-only ] || : > "${pidf%.pid}.writer"

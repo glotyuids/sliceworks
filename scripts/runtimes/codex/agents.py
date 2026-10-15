@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sliceworks 0.8.0. The plugin's agent profiles (agents/*.md) rendered for Codex, and the parity check (method 10,
+# sliceworks 0.8.2. The plugin's agent profiles (agents/*.md) rendered for Codex, and the parity check (method 10,
 # "Two runtimes": the profiles are the source, a sync renders them, T0 fails on drift).
 #
 #   agents.py sync  [--root <project>]          write <project>/.codex/agents/<role>.toml for every native role
@@ -15,6 +15,8 @@
 import argparse, json, pathlib, re, subprocess, sys
 
 PKG = pathlib.Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(PKG / "scripts"))
+from safe_git import git_command
 STAMP = "# sliceworks {version}, generated from agents/{name}.md by scripts/runtimes/codex/agents.py; edit the source, not this file"
 PROCESS_ONLY = {"slice-implementer"}
 READ_ONLY = {"business-analyst", "system-analyst", "code-reviewer", "named-risk-reviewer", "code-explorer"}
@@ -55,7 +57,7 @@ def project_root(arg):
     if arg:
         return pathlib.Path(arg).resolve()
     try:
-        common = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        common = subprocess.run(git_command("rev-parse", "--path-format=absolute", "--git-common-dir"),
                                 capture_output=True, text=True, check=True).stdout.strip()
         return pathlib.Path(common).parent
     except (subprocess.CalledProcessError, FileNotFoundError):

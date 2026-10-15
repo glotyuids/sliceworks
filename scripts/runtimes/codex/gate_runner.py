@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sliceworks 0.8.1. Request data selects an allocation and T1, never a shell command.
+# sliceworks 0.8.2. Request data selects an allocation and T1, never a shell command.
 """Run one pending gate request through the project's trusted, slot-admitting verifier."""
 import argparse
 import datetime
@@ -9,6 +9,10 @@ from pathlib import Path
 import re
 import subprocess
 import uuid
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from safe_git import git_command
 
 
 def atomic_json(path, value):
@@ -18,7 +22,7 @@ def atomic_json(path, value):
 
 
 def git(path, *args):
-    return subprocess.check_output(['git', '-C', str(path), *args], text=True).strip()
+    return subprocess.check_output(git_command('-C', path, *args), text=True).strip()
 
 
 def run(aid):
@@ -70,7 +74,7 @@ def run(aid):
             raise ValueError('worktree belongs to another repository')
         if git(wt, 'rev-parse', 'HEAD') != req['head']:
             raise ValueError('request head is stale')
-        if subprocess.run(['git', '-C', str(wt), 'diff', '--quiet']).returncode or subprocess.run(['git', '-C', str(wt), 'diff', '--cached', '--quiet']).returncode:
+        if subprocess.run(git_command('-C', wt, 'diff', '--quiet')).returncode or subprocess.run(git_command('-C', wt, 'diff', '--cached', '--quiet')).returncode:
             raise ValueError('commit tracked worktree changes before requesting verification')
         if (root / os.environ['SW_STOP_FILE']).exists():
             raise ValueError('STOP kill switch present')
@@ -90,7 +94,7 @@ def run(aid):
         text = log.read_text(errors='replace')
         markers = re.findall(r'^RESULT=(\w+)\b', text, re.M)
         passed = child.returncode == 0 and bool(markers) and markers[-1] == 'pass'
-        if git(wt, 'rev-parse', 'HEAD') != req['head'] or subprocess.run(['git', '-C', str(wt), 'diff', '--quiet']).returncode or subprocess.run(['git', '-C', str(wt), 'diff', '--cached', '--quiet']).returncode:
+        if git(wt, 'rev-parse', 'HEAD') != req['head'] or subprocess.run(git_command('-C', wt, 'diff', '--quiet')).returncode or subprocess.run(git_command('-C', wt, 'diff', '--cached', '--quiet')).returncode:
             passed = False
             result['error'] = 'worktree head or tracked source changed during verification'
         result.update(result='pass' if passed else 'fail', exit_code=child.returncode)

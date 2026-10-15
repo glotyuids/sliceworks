@@ -168,5 +168,22 @@ expect "pre-handoff: custom pass does not replace candidate T0" deny implementer
 printf '#!/bin/sh\necho RESULT=pass\n' > scripts/dev/verify-slice.sh
 expect "pre-handoff: custom check and candidate T0 both pass" allow implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
 
+# 6. Host Git in hooks must ignore executable repository configuration.
+# Positive control first, using an argv-safe relative fsmonitor command.
+printf '#!/bin/sh\necho executed >> "$CLAUDE_PROJECT_DIR/fsmonitor-ran"\n' > fsmonitor.sh
+chmod +x fsmonitor.sh
+printf '#!/bin/sh\necho executed >> "$CLAUDE_PROJECT_DIR/hook-ran"\n' > .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+git config core.fsmonitor ./fsmonitor.sh
+git config core.hooksPath "$P/.git/hooks"
+git status --porcelain >/dev/null 2>&1
+git -c user.email=t@t -c user.name=t commit -q --allow-empty -m control >/dev/null 2>&1
+n=$((n+1))
+if [ -s fsmonitor-ran ] && [ -s hook-ran ]; then echo "ok   unsafe Git positive control executes planted config and hook"; else echo "FAIL unsafe Git positive control"; fail=1; failures=$((failures+1)); fi
+rm -f fsmonitor-ran hook-ran
+sh -eu -c '. "$1"; sw_git -C "$2" status --porcelain; sw_git -C "$2" -c user.email=t@t -c user.name=t commit -q --allow-empty -m safe' test "$H/lib.sh" "$P" >/dev/null 2>&1
+rc=$?; n=$((n+1))
+if [ "$rc" -eq 0 ] && [ ! -e fsmonitor-ran ] && [ ! -e hook-ran ]; then echo "ok   hook Git helper disables planted fsmonitor and hooks"; else echo "FAIL hook Git helper executed planted code or failed"; fail=1; failures=$((failures+1)); fi
+
 echo "tests: $n, failures: $failures"
 exit $fail

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.2
+
+- **Security: adopters must take 0.8.2.** The 0.8.0 and 0.8.1 Codex writer roots exposed the whole main `.git` directory. A sandboxed writer could plant executable Git configuration or hooks that an unsandboxed coordinator, collector or gate runner would later execute, and could move other branches. Do not adopt either version's writer roots.
+- `writer_roots.py` replaces that grant with only the linked worktree's Git directory, the object store, exact own-branch ref/reflog files and their locks, plus configured output/run directories. The host prepares only the assigned branch's parent directories after ref packing. The dispatcher refuses foreign/main worktrees, integration branches, allocation branch mismatches, symlinked metadata paths and artifact roots that expose Git metadata. It never grants `refs/heads` as a whole, config, hooks, info, packed refs or another branch.
+- Host Git calls in the collector, gate runner, launcher, agent generator and hooks use `-c core.fsmonitor= -c core.hooksPath=/dev/null` through the shared Python or shell helper. The worker supervisor has no direct Git invocation. Regression fixtures prove planted fsmonitor and pre-commit code executes without the overrides and does not execute with them.
+- A reproducible live probe on installed CLI `0.162.0-alpha.17.2` uses its standalone `app-server` `command/exec` sandbox with the dispatcher's settings, without a model turn. On both loose and packed refs, add/commit succeeds on the slice branch while seven protected write attempts are refused, including config, hooks and the integration ref. The adapter records exact commands, the root list, the packed-ref preparation and denied maintenance warning. Hook and Python suites retain all previous cases.
+
 ## 0.8.1
 
 - Project-owned hooks can suppress all six package enforcement entry points with `SW_PLUGIN_HOOKS=off` (default `on`); session context remains available. Copy adoption documents disabling the plugin in the project settings as well, to remove duplicate skill names.

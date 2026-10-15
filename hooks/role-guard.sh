@@ -1,5 +1,5 @@
 #!/bin/sh
-# sliceworks 0.8.1. Role guard, keyed on the acting role (lib.sh sw_agent_type: the agent_type of the hook input, as
+# sliceworks 0.8.2. Role guard, keyed on the acting role (lib.sh sw_agent_type: the agent_type of the hook input, as
 # plugin agents cannot carry their own hooks; under Codex, the role its launcher gave a worker process). The main
 # session has no role and is never guarded here. A Codex patch naming several files is checked file by file.
 #   slice-implementer : budget stop line; no push, merge, switch, history rewrite, worktree or infrastructure
@@ -81,7 +81,7 @@ log_deny() { # log_deny <rule> <reason>
     cwd="$(sw_field '.cwd')"; slice=""
     for d in "$cwd" "${CLAUDE_PROJECT_DIR:-}"; do
       [ -n "$d" ] || continue
-      r="$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || continue
+      r="$(sw_git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || continue
       [ -f "$r/.slice" ] && { slice="$(head -n 1 "$r/.slice" | tr -d '\r\n')"; break; }
     done
     what="${cmd:-$path}"
