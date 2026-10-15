@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/glotyuids/sliceworks/schemas/allocation.schema.json",
+  "$id": "https://github.com/sudo-sane/sliceworks/schemas/allocation.schema.json",
   "title": "sliceworks allocation record",
   "description": "One dispatch of one role to one worker (method chapter 19). Committed by the coordinator under <state-dir>/allocations/<id>.json before the worker starts; the unit of recovery after a compaction; what the collector reads.",
   "type": "object",

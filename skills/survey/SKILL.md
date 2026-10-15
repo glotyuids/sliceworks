@@ -3,7 +3,7 @@ name: survey
 description: Inventory a project for sliceworks - detect the stack and its commands, the process systems already in use (Spec Kit, OpenSpec, decision records, plans, architecture documents, boards, runbooks), the agent configuration (instruction files, rules, agents, skills, hooks, plugins, MCP servers, project memory), and the coverage of every phase's artifacts; write SURVEY.md with an interpretation and the sources to import. Use when the user says "survey the project", "what do we have here", "analyze this repo for the process", "inventory", or right after adopt.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

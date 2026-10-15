@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/glotyuids/sliceworks/schemas/scenario.schema.json",
+  "$id": "https://github.com/sudo-sane/sliceworks/schemas/scenario.schema.json",
   "title": "sliceworks user scenario",
   "description": "One entry of SCENARIOS.json: a user journey step above the ledger rows. A scenario of a milestone must prove at least one row before the milestone is accepting.",
   "type": "object",

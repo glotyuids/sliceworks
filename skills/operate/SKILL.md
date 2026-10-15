@@ -3,7 +3,7 @@ name: operate
 description: Run a sliceworks product in production - install probe rows and their schedule, open incidents from red probes or reports, drive fix slices through the hotfix lane, run the production review digest over anonymized traces, keep INCIDENTS.md and the postmortems, and page the owner only for severity one or human-only acts. Use when the user says "operate", "on call", "incident", "production review", "daily digest", "what happened in prod", or after a release is verified.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

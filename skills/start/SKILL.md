@@ -3,7 +3,7 @@ name: start
 description: The one entry point of sliceworks - look at the project's state and run the right thing next: adopt a blank project, survey a newly adopted one, prepare from existing specs and decisions, discover from an idea, design scenarios, plan the first increment, resume the run, or accept a finished milestone. Use when the user says "start", "what's next", "continue", "let's go", "where are we", "begin development", or gives no more direction than "go".
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

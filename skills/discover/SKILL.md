@@ -3,7 +3,7 @@ name: discover
 description: Open, run and close a sliceworks research round - fix the questions from SPARK.md or the feedback register, dispatch read-only researchers one question each, fill the claim register with sources and verification verdicts, run the register lint, freeze the round and hand its open questions to Decide. Use when the user says "research this", "open a round", "verify these assumptions", "what do we know about", "discover", or when a milestone enters discovering.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

@@ -3,7 +3,7 @@ name: intake
 description: Take a request typed in chat through the sliceworks intake pipeline - capture it as a feedback candidate, run business analysis and system analysis as read-only agents, adapt the user scenarios and ledger rows with named checks, record the questions and the placement decision, and place it into the current increment, the next one, or a later milestone, or route an idea to a round, a defect to a fix slice and a pivot to refocus. Use when the user says "add a feature", "I want X", "can we also", "change how Y works", "users asked for", "new requirement", or describes something the product should do.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.6.0
 ---
 

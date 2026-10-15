@@ -3,7 +3,7 @@ name: kickoff
 description: Run the one kickoff session of a sliceworks run with the owner - scope in and out, the human-only list for this product, increments with exit demos, acceptance scenarios as feature-ledger rows with checks, the first contracts, the budget share and model routing, and the kickoff decisions recorded with veto windows. Use when the user says "kick off the run", "plan the increments", "turn this scope into feature rows", "start the autonomous run", or after adopt in a project with no backlog yet.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

@@ -1,13 +1,13 @@
 # 18. The skills library
 
-`sliceworks` owns the life cycle: phases, ledgers, gates, coordination, the dashboard. It does not say how to write Go, run a migration, build a pipeline or respond to an incident. Those are **skills**, and the owner's library of them is [`engineering-skills`](https://github.com/glotyuids/engineering-skills): packs of Agent Skills installed into a project by copy with a provenance stamp, upstream-first, tool-agnostic. The two are bound in both directions.
+`sliceworks` owns the life cycle: phases, ledgers, gates, coordination, the dashboard. It does not say how to write Go, run a migration, build a pipeline or respond to an incident. Those are **skills**, and the owner's library of them is [`engineering-skills`](https://github.com/sudo-sane/engineering-skills): packs of Agent Skills installed into a project by copy with a provenance stamp, upstream-first, tool-agnostic. The two are bound in both directions.
 
 ## The library lists the life cycle
 
 `sliceworks` is a plugin entry in the library's marketplace, installed from its own repository:
 
 ```text
-/plugin marketplace add glotyuids/engineering-skills
+/plugin marketplace add sudo-sane/engineering-skills
 /plugin install sliceworks@engineering-skills
 ```
 

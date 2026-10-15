@@ -3,7 +3,7 @@ name: accept
 description: Close a sliceworks milestone's engineering and prepare the owner's acceptance - run the demo, list the gate rows with their exact asks, assemble the acceptance packet, keep mechanism-verified and quality-accepted as separate verdicts, notify the owner, and on acceptance move the milestone to releasing or closed. Use when the user or the coordinator says "accept the milestone", "prepare acceptance", "is the MVP done", "acceptance packet", or when every row of a milestone passes or is blocked on a human.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

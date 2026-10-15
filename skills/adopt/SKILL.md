@@ -4,7 +4,7 @@ description: Set up a repository to run under the sliceworks development life cy
 disable-model-invocation: true
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.7.0
 ---
 

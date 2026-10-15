@@ -22,7 +22,7 @@ it prevents; a component whose failure stops occurring is removed at the retrosp
 From the terminal, once per machine (in the desktop app the `/plugin` slash form opens the plugin panel instead of running the subcommand, so use the CLI):
 
 ```bash
-claude plugin marketplace add glotyuids/engineering-skills
+claude plugin marketplace add sudo-sane/engineering-skills
 ```
 
 ```bash
@@ -49,7 +49,7 @@ Then `/reload-plugins` or a new session. To make it automatic, mark the marketpl
 
 ```json
 "extraKnownMarketplaces": {
-  "engineering-skills": { "source": { "source": "github", "repo": "glotyuids/engineering-skills" }, "autoUpdate": true }
+  "engineering-skills": { "source": { "source": "github", "repo": "sudo-sane/engineering-skills" }, "autoUpdate": true }
 }
 ```
 
@@ -64,7 +64,7 @@ Codex reads the same `AGENTS.md` and loads skills from `.agents/skills` (project
 ```toml
 [marketplaces.sliceworks]
 source_type = "git"
-source = "https://github.com/glotyuids/sliceworks.git"
+source = "https://github.com/sudo-sane/sliceworks.git"
 
 [plugins."sliceworks@sliceworks"]
 enabled = true
@@ -75,7 +75,7 @@ Then restart Codex; the skills appear as `sliceworks` skills. This path is writt
 **By copy.** From a clone, into a project:
 
 ```bash
-git clone https://github.com/glotyuids/sliceworks
+git clone https://github.com/sudo-sane/sliceworks
 sliceworks/scripts/install.sh /path/to/project --tools codex
 ```
 
@@ -111,7 +111,7 @@ Every adopted project gets the same page: the first run's dashboard, generated b
 
 ## With the skills library
 
-`sliceworks` owns the life cycle; [`engineering-skills`](https://github.com/glotyuids/engineering-skills) owns how each engineering thing is done. The survey detects which packs a project has, recommends the rest for its stack, and each phase names the library skill it calls (`review-plan` at design, `incident-response` at operate, the infra pack at release) and what happens when it is absent. See `method/18-skills-library.md`.
+`sliceworks` owns the life cycle; [`engineering-skills`](https://github.com/sudo-sane/engineering-skills) owns how each engineering thing is done. The survey detects which packs a project has, recommends the rest for its stack, and each phase names the library skill it calls (`review-plan` at design, `incident-response` at operate, the infra pack at release) and what happens when it is absent. See `method/18-skills-library.md`.
 
 ## Profiles
 

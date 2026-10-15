@@ -3,7 +3,7 @@ name: retro
 description: Close an increment under sliceworks - run the demo, spawn the efficiency reviewer, hold the retrospective (outcome and tax numbers, component table walk, at most three adopted changes with metrics and sunsets, last time's changes verified or sunset), write the retrospective page and notify the owner. Use when the user or the coordinator says "close the increment", "run the retro", "retrospective for increment N", or when every row of the increment is passing or blocked on a human.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

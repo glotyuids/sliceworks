@@ -3,7 +3,7 @@ name: prepare
 description: Bring a project to the shape sliceworks reads from what it already has - import Spec Kit constitutions and specs, OpenSpec specs and changes, decision records, plans and roadmaps, architecture documents, end-to-end tests and boards into SPARK.md, INVARIANTS.md, DECISIONS.md, MILESTONES.md, SCENARIOS.json, FEATURES.json rows and BACKLOG.md slice candidates, each marked derived from its source and confirmed by the owner in one message; list the gaps that discover or design must fill. Use when the user says "prepare the project", "import our specs", "we already have ADRs / a roadmap / OpenSpec", "convert what we have", or when the dispatcher says prepare.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

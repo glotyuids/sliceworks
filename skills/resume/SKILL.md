@@ -3,7 +3,7 @@ name: resume
 description: Start or resume the sliceworks coordinator in a project that adopted the method - read the recovery file and the state files, record a usage reading, apply the budget holds, re-dispatch slices whose implementer is not running, restart the background timers, and set the increment goal. Use when the user says "resume the coordinator", "continue the run", "pick up where the run stopped", "restart after the compaction", or pastes the START page's resume prompt.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.7.0
 ---
 

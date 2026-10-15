@@ -3,7 +3,7 @@ name: collect
 description: Read what every worker has actually finished without asking anyone - run the sliceworks collector over the open allocations and report, per allocation, RUNNING, DONE, BLOCKED, HOLD, STALE-HANDOFF or STOPPED-NO-HANDOFF from process handles, branch heads, tier logs and committed handoffs; then take the next already-authorized bounded action. Use when the user says "what finished", "collect results", "did the slice return", "is the writer still running", "check the chats", or whenever the coordinator would otherwise send a status request.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

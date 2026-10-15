@@ -107,7 +107,8 @@ def detect_process_systems(root):
     return s
 
 
-LIBRARY = "glotyuids/engineering-skills"
+LIBRARY = "sudo-sane/engineering-skills"
+LIBRARY_SOURCES = (LIBRARY, "glotyuids/engineering-skills")  # the owner's former account name stamps copies installed before the rename
 LIBRARY_PACKS = {  # pack -> skills, as the library's manifest lists them (kept in sync by hand; the library is the source)
     "core": ["bootstrap-project"],
     "process": ["git-workflow", "documentation-standards", "deslop", "review-plan", "integration-testing", "incident-response", "kanban-md", "security-guidelines"],
@@ -139,7 +140,7 @@ def detect_library_skills(root):
             if not head.startswith("---"):
                 continue
             fm = head.split("---", 2)[1]
-            if f"source: {LIBRARY}" not in fm:
+            if not any(f"source: {s}" in fm for s in LIBRARY_SOURCES):
                 continue
             m = re.search(r"^\s*version:\s*(\S+)", fm, re.M)
             name = sk.parent.name

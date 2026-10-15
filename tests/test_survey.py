@@ -89,7 +89,7 @@ class LibraryBinding(unittest.TestCase):
         (self.root / "docs/process").mkdir(parents=True); (self.root / "docs/process/SURVEY.md").write_text("x")
         (self.root / "go.mod").write_text("module x\n")
         for base in (".claude/skills", ".agents/skills"):
-            for name, src in (("review-plan", "glotyuids/engineering-skills"), ("git-workflow", "glotyuids/engineering-skills"), ("my-own", "me/mine")):
+            for name, src in (("review-plan", "sudo-sane/engineering-skills"), ("git-workflow", "glotyuids/engineering-skills"), ("my-own", "me/mine")):
                 d = self.root / base / name; d.mkdir(parents=True)
                 d.joinpath("SKILL.md").write_text(f"---\nname: {name}\ndescription: x\nmetadata:\n  source: {src}\n  version: 0.1.{'1' if name == 'review-plan' else '0'}\n---\nbody\n")
 
@@ -101,6 +101,12 @@ class LibraryBinding(unittest.TestCase):
         self.assertEqual(sorted(rep["skills"]), ["git-workflow", "review-plan"])
         self.assertEqual(rep["skills"]["review-plan"]["version"], "0.1.1"); self.assertEqual(sorted(rep["skills"]["review-plan"]["locations"]), [".agents/skills", ".claude/skills"])
         self.assertEqual(sorted(rep["packs"]), ["process"]); self.assertIn("incident-response", rep["packs"]["process"]["missing"])
+
+    def test_former_owner_source_is_still_the_library(self):
+        # git-workflow carries the stamp from before the account rename (glotyuids -> sudo-sane)
+        rep = json.loads(run("--root", str(self.root), "--json"))["library"]
+        self.assertIn("git-workflow", rep["skills"]); self.assertNotIn("my-own", rep["skills"])
+        self.assertEqual(rep["packs"]["process"]["installed"], ["git-workflow", "review-plan"])
 
     def test_recommendations_follow_stack_and_phases(self):
         rep = json.loads(run("--root", str(self.root), "--json"))["library"]

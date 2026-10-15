@@ -3,7 +3,7 @@ name: decide
 description: Keep the sliceworks decisions ledger - turn open questions into Q entries with researched defaults and due dates, announce veto windows, apply defaults at due, record owner answers and vetoes as D entries with class and status, supersede rather than edit, and keep the precedence rule. Use when the user says "record this decision", "what is still open", "apply the defaults", "the owner answered", "veto", "decide", or when a round closes with open questions.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

@@ -3,7 +3,7 @@ name: brief
 description: Write one slice brief from its feature-ledger rows, the frozen contract and a reuse map - eight sections, at most 150 lines, material-boundary flag, goal condition, dependencies - into the slices directory. Use when the user or the coordinator says "write the brief for slice N", "brief this slice", "prepare slice N for dispatch", or when the ready detector lists a slice without a brief.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

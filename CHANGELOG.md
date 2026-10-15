@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The GitHub account was renamed from `glotyuids` to `sudo-sane`. The plugin manifest (author, homepage, repository), the install commands and Codex marketplace source in the README, the schema `$id`s, the method links and every skill's `metadata.source` now name `sudo-sane`. Skill versions are unchanged except `update`. The frozen design notes in `docs/design/` keep the old name; GitHub redirects it.
+- Former stamps stay recognised: `update` (0.5.0 → 0.5.1) treats `metadata.source: glotyuids/sliceworks` as the same source and a copy that differs only in that line as in sync, rewriting the stamp; the survey detects library skills stamped `glotyuids/engineering-skills` as well as `sudo-sane/engineering-skills`, with a test.
+
 ## 0.7.0
 
 - Dashboard: the package now ships the generator (`dashboard/`, standard library only, collect → compute → render), ported from the first run's page with its tokens, CSS and components unchanged: progress, scenario, budget and money tiles, hold banners, one fold per increment with a segmented bar, a timeline and slice cards with a six-step stepper, the owner's inbox, veto clocks, open questions and milestones. Until now an adopting project had to write its own page, so every project looked different and a published copy was restyled. Everything project-specific moved into configuration (`SW_PROJECT_NAME`, `SW_DASHBOARD_OUT`, `SW_DASHBOARD_PUBLISH_CMD`, `SW_DASHBOARD_PUBLISH_EVERY`; `SW_TIMEZONE` now accepts offsets); the first run's legacy block, code-size baseline and budget-card variants were dropped.

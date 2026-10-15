@@ -4,14 +4,14 @@ description: Bring a project's installed sliceworks files up to the package's cu
 disable-model-invocation: true
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
-  version: 0.5.0
+  source: sudo-sane/sliceworks
+  version: 0.5.1
 ---
 
 # Update installed files
 
-1. **Find what is installed.** Every file in the project carrying a `# sliceworks <version>` header or a `metadata.source: glotyuids/sliceworks` front matter: `.sliceworks/config.env`, `.claude/rules/sliceworks.md`, the scripts the package installed, `.agents/skills/*` copies, `.codex/` files. State files (`FEATURES.json`, `STATE.md`, briefs, retros) are the project's data and are never touched.
-2. **Classify** each against `${CLAUDE_PLUGIN_ROOT}`: in sync (identical), stale (package version newer, content differs only by the package's changes), modified (same version, different content: hand-edited; do not overwrite, list it and ask whether to move the edit upstream), orphan (no longer shipped: report, remove only on confirmation).
+1. **Find what is installed.** Every file in the project carrying a `# sliceworks <version>` header or a `metadata.source: sudo-sane/sliceworks` front matter (`glotyuids/sliceworks`, the owner's former account name, stamps copies installed before the rename and counts as the same source): `.sliceworks/config.env`, `.claude/rules/sliceworks.md`, the scripts the package installed, `.agents/skills/*` copies, `.codex/` files. State files (`FEATURES.json`, `STATE.md`, briefs, retros) are the project's data and are never touched.
+2. **Classify** each against `${CLAUDE_PLUGIN_ROOT}`, after reading a `glotyuids/sliceworks` source line as `sudo-sane/sliceworks`: in sync (identical; when only the source line differed, rewrite it to the new name), stale (package version newer, content differs only by the package's changes), modified (same version, different content: hand-edited; do not overwrite, list it and ask whether to move the edit upstream), orphan (no longer shipped: report, remove only on confirmation).
 3. **Replace stale files wholesale**, keeping the new stamp. For `config.env`, never replace: diff the template's keys against the project's file and append missing keys with their defaults and a `# new in <version>` comment.
 4. **Read `CHANGELOG.md`** of the package for every version between the installed and the current one; tell the user what changed in substance and which new configuration keys or template sections the project must now fill.
 5. **Report.** Updated (old → new), kept as modified and why, orphans, new keys to fill. Do not claim an update you did not perform.

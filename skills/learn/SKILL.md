@@ -3,7 +3,7 @@ name: learn
 description: Learn about the product, not the process - run evaluation suites under token and money caps and record verdicts, review metrics against the milestone's success metrics, maintain the feedback register with evidence, record paid runs in the money ledger, and propose the next milestone's research questions. Use when the user says "evaluate", "run the evals", "metrics review", "what did we learn", "feedback", "did the MVP work", or at an increment or release close.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

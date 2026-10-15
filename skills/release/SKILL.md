@@ -3,7 +3,7 @@ name: release
 description: Ship a sliceworks milestone or hotfix through the release checklist - open a release slice, drive the steps (version and changelog, migrations and rollback, flags, runbook, the isolated-environment T5 rehearsal, security review, approvals as decisions, the one push), prepare every human deploy act with its exact command and verification, record post-release probes and the release in MILESTONES.md. Use when the user says "release", "ship it", "deploy", "cut a release", "hotfix to production", or after a milestone is accepted.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

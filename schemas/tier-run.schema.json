@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/glotyuids/sliceworks/schemas/tier-run.schema.json",
+  "$id": "https://github.com/sudo-sane/sliceworks/schemas/tier-run.schema.json",
   "title": "sliceworks tier run",
   "description": "One line of metrics/tiers.jsonl, written by the tier runner at the end of every run. An execution record binds the command, the full source identity, the assigned base, the log and the real exit result (method chapter 19).",
   "type": "object",

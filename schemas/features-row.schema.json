@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/glotyuids/sliceworks/schemas/features-row.schema.json",
+  "$id": "https://github.com/sudo-sane/sliceworks/schemas/features-row.schema.json",
   "title": "sliceworks feature-ledger row",
   "description": "One row of FEATURES.json (an array of rows). One ledger, many kinds: kind says what the check proves (method chapter 0). Agents may change only passes and evidence. Removing or weakening a check is forbidden.",
   "type": "object",

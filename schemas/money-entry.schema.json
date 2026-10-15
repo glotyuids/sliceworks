@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/glotyuids/sliceworks/schemas/money-entry.schema.json",
+  "$id": "https://github.com/sudo-sane/sliceworks/schemas/money-entry.schema.json",
   "title": "sliceworks money ledger entry",
   "description": "One line of metrics/money.jsonl: a paid run recorded against an authorization decision. The money guard sums amount per authorization against the cap.",
   "type": "object",

@@ -3,7 +3,7 @@ name: plan-increment
 description: Plan one increment before it starts - surface map, reuse audit, decoupling review into cores and wires with lanes and hot files, dependency columns filled, and the first ready briefs. Use when the user or the coordinator says "plan increment N", "what can start now", "map the surface for these slices", "split this increment", or when a milestone enters planning or an increment is about to start.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.5.0
 ---
 

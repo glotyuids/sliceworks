@@ -3,7 +3,7 @@ name: design
 description: Write or update the sliceworks design artifacts from decisions and rounds - INVARIANTS.md, ARCHITECTURE.md with decision citations, specs with format versions, SCENARIOS.json, MILESTONES.md with gate families and success metrics, threat models for material surfaces, the INDEX.md Current table - then run the design review before Plan. Use when the user says "design this", "write the architecture", "define the milestone", "list the user scenarios", "threat model", or when a milestone enters designing.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.6.0
 ---
 

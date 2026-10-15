@@ -3,7 +3,7 @@ name: refocus
 description: Re-plan a sliceworks milestone mid-flight when a request or evidence changes the product - pause active slices at a safe point, record the pivot as a decision with the pivot marker and its evidence, audit every document, scenario, row, contract, spec and threat model against it with the two read-only analysts, archive what the new focus contradicts, re-derive increments and scenarios, re-run design for every amended surface, re-map rows without changing ids, mark paused slices with their resume increment, and leave a re-plan marker on the timeline. Use when the user says "refocus", "re-plan", "pivot", "the scope changed", "the product changed", "pause these slices", when intake answers pivot: yes, or when a Learn or Discover output invalidates the plan.
 license: Apache-2.0
 metadata:
-  source: glotyuids/sliceworks
+  source: sudo-sane/sliceworks
   version: 0.6.0
 ---
 
