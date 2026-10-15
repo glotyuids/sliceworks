@@ -1,4 +1,4 @@
-# sliceworks 0.6.0: shared helpers for the hooks. POSIX sh, needs jq.
+# sliceworks 0.8.1: shared helpers for the hooks. POSIX sh, needs jq.
 # Sourced after `input="$(cat)"`. Every hook calls sw_load_config and exits 0 when it returns 1.
 
 sw_root() {
@@ -48,6 +48,8 @@ sw_load_config() {
   SW_STATE_DIR="docs/process"; SW_OUTPUTS_DIR="outputs"; SW_RUN_DIR=".run"
   SW_INTEGRATION_BRANCH="main"; SW_SLICE_BRANCH_PREFIX="slice/"; SW_WORKTREE_ROOT=".claude/worktrees"
   SW_VERIFY_CMD="scripts/dev/verify-slice.sh"; SW_T0_ARGS="t0"
+  SW_PLUGIN_HOOKS=on; SW_CODEX_BIN=codex; SW_CODEX_NETWORK=0
+  SW_PREHANDOFF_CMD=""
   SW_WEEKLY_DISPATCH_HOLD=80; SW_WEEKLY_STOP=85; SW_FIVE_HOUR_DISPATCH_HOLD=90; SW_FIVE_HOUR_STOP=100
   SW_READING_MAX_AGE=5400; SW_OWNER_SHARE_PCT=15
   SW_EXPLORER_AGENTS="Explore Plan claude-code-guide code-explorer sliceworks:code-explorer"
@@ -59,6 +61,7 @@ sw_load_config() {
   SW_MONEY_CAP=0; SW_MONEY_CURRENCY=USD; SW_PAID_CMDS=""
   # shellcheck disable=SC1090
   . "$SW_CONFIG"
+  SW_PREHANDOFF_CMD="${SW_PREHANDOFF_CMD:-$SW_VERIFY_CMD $SW_T0_ARGS}"
   SW_STOP_FILE="${SW_STOP_FILE:-$SW_STATE_DIR/STOP}"
   SW_USAGE_FILE="${SW_USAGE_FILE:-$SW_STATE_DIR/metrics/usage.jsonl}"
   SW_RETROS_DIR="${SW_RETROS_DIR:-$SW_STATE_DIR/retros}"
@@ -136,3 +139,6 @@ sw_budget_verdict() { # prints "stop <reason>" or "ok"
   if [ "${v:-0}" -ge "$SW_FIVE_HOUR_STOP" ]; then echo "stop five-hour ${five}% is at the limit"; return; fi
   echo ok
 }
+
+# Enforcement entry points call this immediately after loading config; session context stays available.
+sw_plugin_hooks_enabled() { [ "$SW_PLUGIN_HOOKS" != off ]; }

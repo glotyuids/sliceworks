@@ -1,5 +1,5 @@
 #!/bin/sh
-# sliceworks 0.8.0. Stop hook for the main session. When the kill switch is present the message says so, so a resumed
+# sliceworks 0.8.1. Stop hook for the main session. When the kill switch is present the message says so, so a resumed
 # coordinator does not re-dispatch until the owner removes STOP. Otherwise a Claude Code turn may always end: the host
 # delivers background completions itself.
 # Codex delivers none, so there (SW_CODEX_CONTINUE=1) the hook keeps the run going: while worker processes of
@@ -8,6 +8,7 @@
 # then blocks either way, so the coordinator wakes about once per window. Nothing running and nothing unread, the
 # budget stop line, or the kill switch: the turn ends.
 input="$(cat)"; . "$(dirname "$0")/lib.sh"; sw_load_config || exit 0
+sw_plugin_hooks_enabled || exit 0
 [ -z "$(sw_agent_type)" ] || exit 0
 if [ -f "$SW_ROOT/$SW_STOP_FILE" ]; then
   jq -n --arg f "$SW_STOP_FILE" '{systemMessage:("STOP kill switch is present (" + $f + "). The run stays halted until the owner removes the file.")}'

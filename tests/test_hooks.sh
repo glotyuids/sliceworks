@@ -115,5 +115,58 @@ expect "codex stop: SW_CODEX_CONTINUE=0 ends the turn" allow coordinator-stop "$
 { kill "$spid" && wait "$spid"; } 2>/dev/null; unset SW_CODEX_WAIT
 out="$(printf '{"source":"startup"}' | sh "$H/session-context.sh")"; n=$((n+1))
 case "$out" in *"runs under sliceworks"*) echo "ok   session context printed";; *) echo "FAIL session context"; fail=1; failures=$((failures+1));; esac
+# 5. Every enforcement entry point is silent and inert when package hooks are disabled.
+# Keep failure triggers active so off cannot accidentally pass because a hook had nothing to enforce.
+printf 'SW_PREHANDOFF_CMD="echo lint-failed; exit 1"\nSW_CODEX_CONTINUE=1\nSW_MONEY_CAP=0\n' >> .sliceworks/config.env
+printf '{"at":"%s","weekly_pct":82,"five_hour_pct":5}\n' "$now" > docs/process/metrics/usage.jsonl
+for h in kill-switch budget-guard money-guard role-guard implementer-stop coordinator-stop; do
+  rm -f docs/process/STOP
+  case "$h" in
+    kill-switch) touch docs/process/STOP; inp='{"tool_name":"Edit","tool_input":{"file_path":"x"}}';;
+    budget-guard) inp='{"tool_name":"Agent","tool_input":{"subagent_type":"general-purpose"}}';;
+    money-guard) inp='{"tool_name":"Bash","tool_input":{"command":"evals/run.sh --paid"}}';;
+    role-guard) inp="{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"git push\"},$IMPL,\"cwd\":\"$P\"}";;
+    implementer-stop) inp="{$IMPL,\"cwd\":\"$P\"}";;
+    coordinator-stop) touch docs/process/STOP; inp='{"hook_event_name":"Stop"}';;
+  esac
+  for mode in on off; do
+    printf 'SW_PLUGIN_HOOKS=%s\n' "$mode" >> .sliceworks/config.env
+    out="$(printf '%s' "$inp" | sh "$H/$h.sh" 2>/dev/null)"; rc=$?; n=$((n+1))
+    if [ "$rc" -eq 0 ] && { { [ "$mode" = off ] && [ -z "$out" ]; } || { [ "$mode" = on ] && [ -n "$out" ]; }; }; then
+      echo "ok   plugin hooks $mode: $h"
+    else echo "FAIL plugin hooks $mode: $h (exit $rc, $out)"; fail=1; failures=$((failures+1)); fi
+  done
+done
+rm -f docs/process/STOP
+printf 'SW_PLUGIN_HOOKS=on\n' >> .sliceworks/config.env
+# A HOLD, including the historical empty marker, does not evade lint / database-free tests.
+: > .blocked
+expect "pre-handoff: empty HOLD marker still runs checks" deny implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'HOLD database gate\n' > .blocked
+expect "pre-handoff: brokered database HOLD still runs checks" deny implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'SW_PREHANDOFF_CMD="echo lint-ok; echo unit-ok"\n' >> .sliceworks/config.env
+expect "pre-handoff: lint and unit pass permits HOLD" allow implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'SW_PREHANDOFF_CMD="missing-lint-command"\n' >> .sliceworks/config.env
+printf 'command not found: missing-lint-command\n' > unavailable.log
+printf '{"command":"missing-lint-command","log":"unavailable.log"}\n' > .prehandoff-unavailable.json
+printf 'HOLD missing-lint-command: unavailable.log\n' > .blocked
+expect "pre-handoff: exact unavailable command with output permits HOLD" allow implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'HOLD generic sandbox limitation\n' > .blocked
+expect "pre-handoff: generic HOLD cannot use unavailable exemption" deny implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'HOLD missing-lint-command\n' > .blocked
+: > unavailable.log
+expect "pre-handoff: empty output cannot exempt HOLD" deny implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf 'BLOCKED product question\n' > .blocked
+expect "pre-handoff: explicit BLOCKED may end before implementation" allow implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+
+rm -f .blocked .prehandoff-unavailable.json
+printf 'SW_PREHANDOFF_CMD="echo lint-ok; echo unit-ok"\n' >> .sliceworks/config.env
+mkdir -p scripts/dev
+printf '#!/bin/sh\necho RESULT=fail\nexit 1\n' > scripts/dev/verify-slice.sh
+chmod +x scripts/dev/verify-slice.sh
+expect "pre-handoff: custom pass does not replace candidate T0" deny implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+printf '#!/bin/sh\necho RESULT=pass\n' > scripts/dev/verify-slice.sh
+expect "pre-handoff: custom check and candidate T0 both pass" allow implementer-stop "{$IMPL,\"cwd\":\"$P\"}"
+
 echo "tests: $n, failures: $failures"
 exit $fail

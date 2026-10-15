@@ -1,8 +1,9 @@
 #!/bin/sh
-# sliceworks 0.2.0. Money guard (method 16): a Bash command the configuration marks as paid (SW_PAID_CMDS,
+# sliceworks 0.8.1. Money guard (method 16): a Bash command the configuration marks as paid (SW_PAID_CMDS,
 # |-separated substrings) is refused when no authorization cap is set, or when the money ledger's total for
 # SW_MONEY_CURRENCY has reached SW_MONEY_CAP. Ledger rows: metrics/money.jsonl (schemas/money-entry.schema.json).
 input="$(cat)"; . "$(dirname "$0")/lib.sh"; sw_load_config || exit 0
+sw_plugin_hooks_enabled || exit 0
 [ "$(sw_field '.tool_name')" = "Bash" ] || exit 0
 [ -n "$SW_PAID_CMDS" ] || exit 0
 cmd="$(sw_field '.tool_input.command')"; [ -n "$cmd" ] || exit 0

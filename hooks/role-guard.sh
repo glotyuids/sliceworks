@@ -1,5 +1,5 @@
 #!/bin/sh
-# sliceworks 0.8.0. Role guard, keyed on the acting role (lib.sh sw_agent_type: the agent_type of the hook input, as
+# sliceworks 0.8.1. Role guard, keyed on the acting role (lib.sh sw_agent_type: the agent_type of the hook input, as
 # plugin agents cannot carry their own hooks; under Codex, the role its launcher gave a worker process). The main
 # session has no role and is never guarded here. A Codex patch naming several files is checked file by file.
 #   slice-implementer : budget stop line; no push, merge, switch, history rewrite, worktree or infrastructure
@@ -11,6 +11,7 @@
 #   architect         : writes only the design surfaces (SW_DESIGN_SURFACES).
 #   business-analyst, system-analyst, code-reviewer, named-risk-reviewer, code-explorer: read-only; no Edit/Write, no Bash writes.
 input="$(cat)"; . "$(dirname "$0")/lib.sh"; sw_load_config || exit 0
+sw_plugin_hooks_enabled || exit 0
 type="$(sw_agent_type)"; [ -n "$type" ] || exit 0
 tool="$(sw_field '.tool_name')"
 path="$(sw_field '.tool_input.file_path // .tool_input.path')"

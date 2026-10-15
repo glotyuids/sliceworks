@@ -9,3 +9,6 @@ __pycache__/
 .DS_Store
 evals/results/
 tests/fixture-repo/.git/
+
+# Local code index (machine-generated, never part of a release)
+.code-graph/

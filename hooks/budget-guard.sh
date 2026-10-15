@@ -1,8 +1,9 @@
 #!/bin/sh
-# sliceworks 0.6.0. Budget hold (methods 8 and 19). A dispatch, which includes any message that wakes a worker chat, is refused while the last recorded usage
+# sliceworks 0.8.1. Budget hold (methods 8 and 19). A dispatch, which includes any message that wakes a worker chat, is refused while the last recorded usage
 # reading is at or above a dispatch hold, when no reading exists, when it is older than SW_READING_MAX_AGE
 # seconds, or when a reset has passed since it was taken. Read-only explorers (SW_EXPLORER_AGENTS) are exempt.
 input="$(cat)"; . "$(dirname "$0")/lib.sh"; sw_load_config || exit 0
+sw_plugin_hooks_enabled || exit 0
 tool="$(sw_field '.tool_name')"; hit=0
 for t in $SW_DISPATCH_TOOLS; do case "$tool" in *"$t"*) hit=1;; esac; done
 [ "$hit" = 1 ] || exit 0

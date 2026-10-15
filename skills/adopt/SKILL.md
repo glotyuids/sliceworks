@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.8.0
+  version: 0.8.1
 ---
 
 # Adopt sliceworks in a project
@@ -39,11 +39,11 @@ From `${CLAUDE_PLUGIN_ROOT}/templates/`, substituting the answers:
 - `.sliceworks/config.env` from `config.env` (every `SW_*` the hooks read).
 - `<state-dir>/`: `FEATURES.json` (an empty array, or rows the user already has), `STATE.md`, `BACKLOG.md`, `PROGRESS.md`, `DECISIONS.md`, `NEEDS-HUMAN.md`, `INVARIANTS.md`, `MILESTONES.md`, `SCENARIOS.json` (empty array), `SPARK.md`, `ARCHITECTURE.md`, `INDEX.md`, `RUNTIME.md`, `INCIDENTS.md`, `FEEDBACK.md`, `START.md`, `contracts/`, `slices/`, `plans/`, `rounds/`, `threat-models/`, `accept/`, `allocations/`, `handoffs/`, `intake/`, `refocus/`, `archive/`, `retros/PROPOSALS.md`, `retros/proposals/`, `metrics/` (empty `usage.jsonl`, `tiers.jsonl`, `money.jsonl`), `demos/`, `evals/README.md`, `specs/README.md` at the repository root. Omit the files of phases the profile does not run (`SW_PHASES`).
 - `.claude/rules/sliceworks.md` from `rules.md` (the rules for every agent), and the `AGENTS.fragment.md` block appended to `AGENTS.md` (create `AGENTS.md` and a `CLAUDE.md` containing `@AGENTS.md` if neither exists).
-- `.claude/settings.json`: merge the keys of `settings.fragment.json` (permissions, environment, subagent model, cache TTL, auto-continue, worktree base, `enabledPlugins`). Show the diff before writing. Do not copy any hook into settings: the plugin's hooks already run, and a duplicate runs twice.
+- `.claude/settings.json`: merge the keys of `settings.fragment.json` (permissions, environment, subagent model, cache TTL, auto-continue, worktree base, `enabledPlugins`). Show the diff before writing. Choose one enforcement source. When the project-local copy already owns hooks, set `SW_PLUGIN_HOOKS=off` in `.sliceworks/config.env` and set the installed sliceworks key in project `enabledPlugins` to `false`, retaining the project hooks. This also avoids duplicate skill names. If using only the package hook bodies (plugin or `install.sh --hooks`), keep `SW_PLUGIN_HOOKS=on`; never disable the only enforcement. Show the settings diff before writing.
 - The dashboard: run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/install.sh" "$PWD" --dashboard`, which copies the package's generator and its loop into `scripts/sliceworks/` with their stamps. Set `SW_PROJECT_NAME` (quoted when it has a space) and, if the page should live elsewhere than `<state-dir>/dashboard.html`, `SW_DASHBOARD_OUT`. Never write a dashboard of your own, never restyle the generated page and never publish a different page in its place: the page is the package's (method chapter 9), and a gap in it is fixed upstream.
 - `.gitignore`: add `<state-dir>/STATUS.md`, `<state-dir>/STOP`, the dashboard page, `.run/`, `<outputs>/`.
 - `.worktreeinclude` with the files a new worktree must inherit (environment files), if the profile is `full` or `dual`.
-- For `dual`: `.codex/config.toml` from `codex-config.toml`; the `SW_CODEX_*` keys of `config.env`; `.codex/agents/` from `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/agents.py" sync`, with `agents.py check` added to T0; `.agents/skills/` copies of this plugin's skills only when Codex does not load the plugin. Tell the user to trust the plugin's hooks in Codex (`/hooks`) before the first dispatch. The Codex adapter is `${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/README.md`.
+- For `dual`: `.codex/config.toml` from `codex-config.toml`; the `SW_CODEX_*` keys of `config.env`; `.codex/agents/` from `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/agents.py" sync`, with `agents.py check` added to T0; `.agents/skills/` copies of this plugin's skills only when Codex does not load the plugin. Tell the user to trust the plugin's hooks in Codex (`/hooks`) before the first dispatch. Set `SW_CODEX_BIN` when the CLI is absent from PATH; keep `SW_CODEX_NETWORK=0`. Configure `SW_PREHANDOFF_CMD` to cover lint and all database-free tests on changed packages. For a project-owned dispatcher, adopt the host gate protocol and writable metric environment from the adapter; verify the project verifier retains its slot queue and honors `SW_TIERS_FILE` / `SW_METRICS_DIR`. Disable a simultaneously loaded Codex plugin when copy skills supply the same names. The Codex adapter is `${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/README.md`.
 
 Stamp every written file with `# sliceworks <version>` (or the `metadata` block in Markdown front matter) so the `update` skill can detect drift.
 
