@@ -59,7 +59,7 @@ If the library's marketplace file itself changed (a new entry, a new source), re
 
 Codex reads the same `AGENTS.md` and loads skills from `.agents/skills` (project) or `~/.agents/skills` (user). Two ways in.
 
-**As a Codex plugin.** This repository carries `.agents/plugins/marketplace.json`, the file Codex reads for a marketplace, and Codex falls back to `.claude-plugin/plugin.json` as the plugin manifest. Add to `~/.codex/config.toml` (or the project's `.codex/config.toml`):
+**As a Codex plugin.** This repository carries `.agents/plugins/marketplace.json`, the file Codex reads for a marketplace, and `.codex-plugin/plugin.json`, the Codex manifest (same name and version as the Claude Code one). Add to `~/.codex/config.toml` (or the project's `.codex/config.toml`):
 
 ```toml
 [marketplaces.sliceworks]
@@ -70,24 +70,24 @@ source = "https://github.com/sudo-sane/sliceworks.git"
 enabled = true
 ```
 
-Then restart Codex; the skills appear as `sliceworks` skills. This path is written from the Codex source and from a repository that ships both marketplace files; it has not been exercised on this machine, which has no Codex CLI, so treat the first run as a check.
+Then restart Codex and trust the plugin's hooks (`/hooks`); the skills appear as `sliceworks` skills and the guards run on Codex's tool calls. This path is written from the Codex documentation and exercised by the tests with a stand-in `codex`; it has not yet run against a real Codex CLI, so treat the first run as a check.
 
 **By copy.** From a clone, into a project:
 
 ```bash
 git clone https://github.com/sudo-sane/sliceworks
-sliceworks/scripts/install.sh /path/to/project --tools codex
+sliceworks/scripts/install.sh /path/to/project --tools codex --hooks
 ```
 
-or for every project, user scope:
+(`--hooks` writes `.codex/hooks.json` running the clone's hooks; leave it out when the plugin is installed, or every guard runs twice), or for every project, user scope:
 
 ```bash
 sliceworks/scripts/install.sh --user --tools codex
 ```
 
-The script copies the skills, never symlinks, never overwrites (`--force` to replace), and keeps the provenance stamps the `update` skill compares. `--tools codex,claude` also installs the agents into `.claude/agents` for a Claude Code setup without the plugin; `--tools cursor` targets `.cursor`.
+The script copies the skills and generates the role agents into `.codex/agents`, never symlinks, never overwrites (`--force` to replace), and keeps the provenance stamps the `update` skill compares. `--tools codex,claude` also installs the agents into `.claude/agents` for a Claude Code setup without the plugin; `--tools cursor` targets `.cursor`.
 
-**What Codex gets today.** The twenty skills, and the method, templates and schemas they read. The hooks and the subagent profiles are Claude Code mechanisms; their Codex counterparts (the hook shim, the session guard, agents generated as `.codex/agents/*.toml`, `templates/codex-config.toml`) are the dual profile and arrive with the harness scripts (phase 2 of the plan). To update a copy install, re-run `install.sh` with `--force`, or run the `update` skill, which replaces stale copies and keeps hand-edited ones.
+**What Codex gets today.** The twenty skills and the method, templates and schemas they read; the same hooks (kill switch, budget and money guards, role guard, the T0 stop gate); the role agents generated as `.codex/agents/*.toml` with a parity check; implementers and reviewers as separate `codex exec` worker processes in their own worktrees and sandboxes (`scripts/runtimes/codex/dispatch.sh`, `status.sh`); and a Stop hook that keeps the coordinator going while workers run. The Codex adapter, [`scripts/runtimes/codex/README.md`](scripts/runtimes/codex/README.md), maps each Claude Code mechanism the skills name to its Codex counterpart and lists the known limits. To update a copy install, re-run `install.sh` with `--force`, or run the `update` skill, which replaces stale copies and keeps hand-edited ones.
 
 ### Other runtimes
 

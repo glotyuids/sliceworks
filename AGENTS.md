@@ -31,7 +31,8 @@ is public under Apache-2.0: no hostnames, no local paths, no personal data, no p
 ## Layout
 
 ```text
-.claude-plugin/plugin.json   plugin manifest (Claude Code; Codex reads it as a fallback)
+.claude-plugin/plugin.json   plugin manifest (Claude Code)
+.codex-plugin/plugin.json    plugin manifest (Codex), same name and version; release.sh bumps both
 .agents/plugins/marketplace.json  the Codex marketplace file: this repository lists itself as a plugin
 agents/                      coordinator-facing subagent profiles
 skills/                      start, adopt, survey, prepare, intake, kickoff, discover, decide, design, plan-increment, brief, collect, refocus, resume, retro, accept, release, operate, learn, update
@@ -50,4 +51,4 @@ docs/design/                 dated design notes, frozen
 
 ## Status
 
-0.7.0 ships the dashboard (method chapter 9: the first run's page as the package's generator, installed by `adopt`); 0.6.0 closes the gaps of the second Codex report (two-actor allocations, evidence-checked completion, messages as dispatches, failure classes, unblocks); 0.5.0 adds allocation records, handoffs and the collector (chapter 19); 0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.
+0.8.0 takes Codex beyond one chat: the same hooks on Codex input, generated role agents with a parity check, implementers and reviewers as `codex exec` worker processes (`scripts/runtimes/codex/`, whose README is the Codex adapter), and a Stop hook that keeps the coordinator going. 0.7.0 ships the dashboard (method chapter 9: the first run's page as the package's generator, installed by `adopt`); 0.6.0 closes the gaps of the second Codex report (two-actor allocations, evidence-checked completion, messages as dispatches, failure classes, unblocks); 0.5.0 adds allocation records, handoffs and the collector (chapter 19); 0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.

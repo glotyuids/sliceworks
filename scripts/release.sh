@@ -2,7 +2,7 @@
 # sliceworks 0.6.1. Release the package: one command instead of six.
 #   scripts/release.sh <version> ["<one-line summary for the commit>"] [--no-push] [--marketplace <path-to-engineering-skills>]
 # Steps: the CHANGELOG must already carry a "## <version>" section (write the entry first; the script refuses otherwise);
-# bumps .claude-plugin/plugin.json and the README status prefix; runs the hook tests, the Python tests and the strict
+# bumps .claude-plugin/plugin.json, .codex-plugin/plugin.json and the README status prefix; runs the hook tests, the Python tests and the strict
 # validator; commits; tags v<version>; pushes with tags. With --marketplace, also bumps the sliceworks entry version in the
 # library's marketplace.json, commits and pushes there, so the listing matches (the plugin's own manifest is what installs).
 # Users then get the new version by `claude plugin update sliceworks@engineering-skills`, or automatically when the
@@ -24,7 +24,8 @@ current="$(python3 -c 'import json; print(json.load(open(".claude-plugin/plugin.
 python3 - "$version" <<'PY'
 import json,re,sys
 v=sys.argv[1]
-p='.claude-plugin/plugin.json'; m=json.load(open(p)); old=m['version']; m['version']=v; json.dump(m,open(p,'w'),indent=2); open(p,'a').write('\n')
+for p in ('.claude-plugin/plugin.json', '.codex-plugin/plugin.json'):
+    m=json.load(open(p)); old=m['version']; m['version']=v; json.dump(m,open(p,'w'),indent=2); open(p,'a').write('\n')
 r=open('README.md').read(); r2=re.sub(r'^(\d+\.\d+\.\d+):', v+':', r, count=1, flags=re.M)
 if r2!=r: open('README.md','w').write(r2)
 print(f"version {old} -> {v}")

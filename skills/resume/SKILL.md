@@ -4,12 +4,12 @@ description: Start or resume the sliceworks coordinator in a project that adopte
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.7.0
+  version: 0.8.0
 ---
 
 # Resume the coordinator
 
-Read `.sliceworks/config.env` for the paths below. If the kill switch file exists, stop and say so.
+Read `.sliceworks/config.env` for the paths below. If the kill switch file exists, stop and say so. Under Codex, every dispatch, resume, review, background timer and wait below goes through the Codex adapter, `${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/README.md`: workers are `dispatch.sh` processes and the Stop hook replaces the wake timer.
 
 1. **Recover.** Read the open allocation records under `<state-dir>/allocations/` first (they are the unit of recovery; a chat preview or an old plan is not an allocation), then `.run/coordinator-session.md` if it exists (handles, background task ids, next actions), then `<state-dir>/START.md`, `STATE.md`, the tail of `PROGRESS.md`, and `NEEDS-HUMAN.md`. Do not read logs yourself; use explorers.
 1b. **Collect.** Run the `collect` skill. Completion is read from handoffs, branch heads, logs and process handles, never requested; when a writer has stopped and the next bounded action is authorized, take it.

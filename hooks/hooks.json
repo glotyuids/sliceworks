@@ -1,5 +1,5 @@
 {
-  "description": "sliceworks: kill switch, budget holds, money guard, role guards keyed on agent_type, T0 gate on implementer stop, coordinator stop notice, session context. Every hook exits 0 at once when the project has no .sliceworks/config.env.",
+  "description": "sliceworks: kill switch, budget holds, money guard, role guards keyed on agent_type, T0 gate on implementer stop (SubagentStop, and Stop for a Codex worker process), coordinator stop notice (and, under Codex, the wait-and-continue loop over worker processes), session context. Every hook exits 0 at once when the project has no .sliceworks/config.env.",
   "hooks": {
     "PreToolUse": [
       {
@@ -60,8 +60,13 @@
         "hooks": [
           {
             "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/implementer-stop.sh\"",
+            "timeout": 300
+          },
+          {
+            "type": "command",
             "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/coordinator-stop.sh\"",
-            "timeout": 10
+            "timeout": 600
           }
         ]
       }

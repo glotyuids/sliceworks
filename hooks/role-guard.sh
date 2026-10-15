@@ -1,6 +1,7 @@
 #!/bin/sh
-# sliceworks 0.3.0. Role guard, keyed on the agent_type of the hook input (plugin agents cannot carry their
-# own hooks). The main session has no agent_type and is never guarded here.
+# sliceworks 0.8.0. Role guard, keyed on the acting role (lib.sh sw_agent_type: the agent_type of the hook input, as
+# plugin agents cannot carry their own hooks; under Codex, the role its launcher gave a worker process). The main
+# session has no role and is never guarded here. A Codex patch naming several files is checked file by file.
 #   slice-implementer : budget stop line; no push, merge, switch, history rewrite, worktree or infrastructure
 #                       commands; no writes to protected files (Edit/Write path and Bash write targets in the
 #                       main checkout); no secrets. Denials are logged to <main>/.run/guard-denials.jsonl.
@@ -14,6 +15,13 @@ type="$(sw_agent_type)"; [ -n "$type" ] || exit 0
 tool="$(sw_field '.tool_name')"
 path="$(sw_field '.tool_input.file_path // .tool_input.path')"
 cmd="$(sw_field '.tool_input.command')"
+if [ "$(sw_field '.tool_input.file_paths | length')" -gt 1 ] 2>/dev/null; then
+  sw_field '.tool_input.file_paths[]' | while IFS= read -r p; do
+    out="$(printf '%s' "$input" | jq -c --arg p "$p" '.tool_input.file_path = $p | .tool_input.file_paths = [$p]' | sh "$0")"
+    [ -z "$out" ] || { printf '%s\n' "$out"; break; }
+  done
+  exit 0
+fi
 
 if sw_is_role "$type" efficiency-reviewer; then
   case "$tool" in
@@ -94,6 +102,7 @@ case "$tool" in
   Bash)
     [ -n "$cmd" ] || exit 0
     raw="$cmd"; c="$(printf '%s' "$cmd" | unwt)"
+    case "$c" in *sliceworks-role*) log_deny role-marker "The role marker is the launcher's; implementers never touch it.";; esac
     case "$c" in *pkill*|*killall*) log_deny process-ban "Implementers do not use pkill or killall (they match other slices' and the coordinator's runs). Stop only your own process with kill <pid>.";; esac
     case "$(printf '%s' "$c" | sed 's/git merge-base//g')" in *"git merge"*) log_deny git-ban "Implementers do not push, merge, switch branches, rewrite history or manage worktrees (method 2). Commit on your slice branch and return CANDIDATE or BLOCKED.";; esac
     case "$c" in
