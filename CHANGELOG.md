@@ -1,10 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- The GitHub account was renamed from `glotyuids` to `sudo-sane`. The plugin manifest (author, homepage, repository), the install commands and Codex marketplace source in the README, the schema `$id`s, the method links and every skill's `metadata.source` now name `sudo-sane`. Skill versions are unchanged except `update`. The frozen design notes in `docs/design/` keep the old name; GitHub redirects it.
-- Former stamps stay recognised: `update` (0.5.0 → 0.5.1) treats `metadata.source: glotyuids/sliceworks` as the same source and a copy that differs only in that line as in sync, rewriting the stamp; the survey detects library skills stamped `glotyuids/engineering-skills` as well as `sudo-sane/engineering-skills`, with a test.
-
 ## 0.8.0
 
 - Codex beyond one chat (the Codex adapter, `scripts/runtimes/codex/README.md`, maps every Claude Code mechanism the skills name). Until now Codex got the skills only: one session played every role, with no guards.
@@ -14,6 +9,8 @@
 - The coordinator's Stop hook keeps a Codex run going: while workers run it waits up to `SW_CODEX_WAIT` seconds, then hands finished workers' return lines over as the next prompt (`SW_CODEX_CONTINUE`). The implementer's T0 gate also runs on `Stop` for a worker process, and blocks with a JSON decision on both hosts.
 - A Codex native child spawned without a role reports `agent_type: "default"`; the hooks treat that as no role, so inside a worker it keeps the worker's guard. A worker session opens with a worker paragraph from `session-context.sh` (role and allocation), never the coordinator's. The design note `docs/design/2026-10-15-context-isolation.md` records how history and other context reach workers on both runtimes and plans the fix in phases.
 - `install.sh --tools codex` generates the agents and, with `--hooks`, `.codex/hooks.json` for a copy install. `adopt` (dual profile), `resume`, `brief`, the agent-guide fragment, `templates/codex-config.toml` (no hard-coded thread cap) and method chapter 10 point at the adapter. Twenty-three more hook cases cover Codex-shaped input, the role marker and the continue loop; Python tests cover the agent sync and the launcher with a stand-in `codex`.
+- The GitHub account was renamed from `glotyuids` to `sudo-sane`. The plugin manifest (author, homepage, repository), the install commands and Codex marketplace source in the README, the schema `$id`s, the method links and every skill's `metadata.source` now name `sudo-sane`. Skill versions are unchanged except `update`. The frozen design notes in `docs/design/` keep the old name; GitHub redirects it.
+- Former stamps stay recognised: `update` (0.5.0 → 0.5.1) treats `metadata.source: glotyuids/sliceworks` as the same source and a copy that differs only in that line as in sync, rewriting the stamp; the survey detects library skills stamped `glotyuids/engineering-skills` as well as `sudo-sane/engineering-skills`, with a test.
 
 ## 0.7.0
 
