@@ -9,7 +9,38 @@ sw_root() {
   printf '%s' "$d" | sed -E 's#/\.claude/worktrees/.*$##'
 }
 
+sw_normalize() {
+  # Codex hook input -> the shape the hook bodies read (Claude Code's). Shell tools become Bash with a string command;
+  # apply_patch becomes Edit with file_path (the first file the patch names) and file_paths (all of them); spawn_agent
+  # becomes Agent with subagent_type. Claude Code input passes through unchanged. The native name stays in tool_name_native.
+  case "$input" in *apply_patch*|*exec_command*|*local_shell*|*spawn_agent*|*'"cmd"'*|*'"command":['*) ;; *) return 0;; esac
+  local n
+  n="$(printf '%s' "$input" | jq -c '
+    def cmd: (.tool_input.command // .tool_input.cmd // null)
+      | if type == "array" then (if length >= 3 and (.[0] | tostring | test("(^|/)(ba|z|da)?sh$")) and (.[1] == "-lc" or .[1] == "-c") then .[2] else map(tostring) | join(" ") end) else . end;
+    def patchtext: (.tool_input.patch // .tool_input.input // .tool_input.command // "") | if type == "string" then . else "" end;
+    def patchfiles: [patchtext | scan("\\*\\*\\* (?:Add File|Update File|Delete File|Move to): ([^\\n]+)") | .[0]];
+    (.tool_name // "") as $t
+    | (if ($t | test("^(shell|exec_command|local_shell|unified_exec|container\\.exec)$")) then "Bash"
+       elif $t == "apply_patch" then "Edit" elif $t == "spawn_agent" then "Agent" else $t end) as $m
+    | (if $t == "apply_patch" then patchfiles else [] end) as $pf
+    | . + {tool_name: $m, tool_name_native: $t}
+    | if (.tool_input | type) != "object" then . else
+        .tool_input += ((if $m == "Bash" then {command: cmd} else {} end)
+          + (if $m == "Agent" then {subagent_type: (.tool_input.subagent_type // .tool_input.agent_type // .tool_input.agent // .tool_input.agent_name // null)} else {} end)
+          + (if ($pf | length) > 0 then {file_path: (.tool_input.file_path // $pf[0]), file_paths: $pf} else {} end)) end
+  ' 2>/dev/null)" && [ -n "$n" ] && input="$n"
+  return 0
+}
+
+sw_runtime() { # claude | codex: SW_RUNTIME from the environment, else Codex by its markers (PLUGIN_ROOT, a turn_id in the input)
+  if [ -n "${SW_RUNTIME:-}" ]; then printf '%s' "$SW_RUNTIME"
+  elif [ -n "${PLUGIN_ROOT:-}" ] || [ -n "$(sw_field '.turn_id')" ]; then printf codex
+  else printf claude; fi
+}
+
 sw_load_config() {
+  sw_normalize
   SW_ROOT="$(sw_root)"
   SW_CONFIG="$SW_ROOT/.sliceworks/config.env"
   [ -f "$SW_CONFIG" ] || return 1
@@ -75,7 +106,21 @@ sw_rel() { # sw_rel <path>: the path relative to the main checkout, whichever sp
   printf '%s' "$p"
 }
 
-sw_agent_type() { sw_field '.agent_type'; }
+sw_agent_type() {
+  # The acting role. The host's agent_type first (Claude Code subagents; Codex native subagents, which report
+  # "default" when spawned without a role: that names nothing, so it falls through). Then the role a launcher gave a
+  # separate worker process, a root session with no agent_type: SW_ROLE in its environment, which the worker's own
+  # commands cannot change, and the marker <git-dir>/sliceworks-role of its worktree, never committed (both written by
+  # scripts/runtimes/codex/dispatch.sh). A role-less native child of a worker therefore keeps the worker's guard.
+  # Empty for the main session.
+  local t c g
+  t="$(sw_field '.agent_type')"; [ -n "$t" ] && [ "$t" != default ] && { printf '%s' "$t"; return 0; }
+  [ -n "${SW_ROLE:-}" ] && { printf '%s' "$SW_ROLE"; return 0; }
+  c="$(sw_field '.cwd')"; [ -n "$c" ] || c="$(pwd)"
+  g="$(git -C "$c" rev-parse --absolute-git-dir 2>/dev/null)" || return 0
+  [ -f "$g/sliceworks-role" ] && head -n 1 "$g/sliceworks-role" | tr -d '\r\n'
+  return 0
+}
 
 sw_is_role() { # sw_is_role <agent_type> <role>: matches "<role>" or "<anything>:<role>"
   case "$1" in "$2"|*":$2") return 0;; *) return 1;; esac

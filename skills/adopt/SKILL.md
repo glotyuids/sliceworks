@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.7.0
+  version: 0.8.0
 ---
 
 # Adopt sliceworks in a project
@@ -43,7 +43,7 @@ From `${CLAUDE_PLUGIN_ROOT}/templates/`, substituting the answers:
 - The dashboard: run `sh "${CLAUDE_PLUGIN_ROOT}/scripts/install.sh" "$PWD" --dashboard`, which copies the package's generator and its loop into `scripts/sliceworks/` with their stamps. Set `SW_PROJECT_NAME` (quoted when it has a space) and, if the page should live elsewhere than `<state-dir>/dashboard.html`, `SW_DASHBOARD_OUT`. Never write a dashboard of your own, never restyle the generated page and never publish a different page in its place: the page is the package's (method chapter 9), and a gap in it is fixed upstream.
 - `.gitignore`: add `<state-dir>/STATUS.md`, `<state-dir>/STOP`, the dashboard page, `.run/`, `<outputs>/`.
 - `.worktreeinclude` with the files a new worktree must inherit (environment files), if the profile is `full` or `dual`.
-- For `dual`: `.codex/config.toml` from `codex-config.toml`, and `.agents/skills/` copies of this plugin's skills.
+- For `dual`: `.codex/config.toml` from `codex-config.toml`; the `SW_CODEX_*` keys of `config.env`; `.codex/agents/` from `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/agents.py" sync`, with `agents.py check` added to T0; `.agents/skills/` copies of this plugin's skills only when Codex does not load the plugin. Tell the user to trust the plugin's hooks in Codex (`/hooks`) before the first dispatch. The Codex adapter is `${CLAUDE_PLUGIN_ROOT}/scripts/runtimes/codex/README.md`.
 
 Stamp every written file with `# sliceworks <version>` (or the `metadata` block in Markdown front matter) so the `update` skill can detect drift.
 

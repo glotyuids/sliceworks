@@ -4,7 +4,7 @@ description: Write one slice brief from its feature-ledger rows, the frozen cont
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.5.0
+  version: 0.8.0
 ---
 
 # Write a slice brief
@@ -19,4 +19,4 @@ Template: `${CLAUDE_PLUGIN_ROOT}/templates/brief.md`. Method: `method/04-prepara
 
 Before the dispatch, write the **allocation record** `<state-dir>/allocations/alloc-<slice>-r<n>.json` from `templates/allocation.json` (schema `schemas/allocation.schema.json`): worker kind and runtime, worktree, branch, the **full 40-character base commit** (and its kind: integration, stacked, companion), allowed paths (the same list the role guard and the diff gate use), the completion condition, the required artifacts, the brief as `message_ref`, the `baseline` (the base commit's gate log and result, with its known debt assigned), `unblocks` for fix, process, release and infrastructure slices, and `mode` (`full`, `prepare-only`, `review`). Commit it. A worktree is created only from a committed snapshot that passes the project's preflight.
 
-The dispatch prompt is one line: the brief path, the allocation id, the instruction to write the slice id into `.slice`, the goal condition, the three return shapes, and the rule that the worker commits `handoffs/<allocation-id>.md` (template `handoff.md`) on its branch before returning.
+The dispatch prompt is one line (under Codex, `scripts/runtimes/codex/dispatch.sh` builds it from the allocation record): the brief path, the allocation id, the instruction to write the slice id into `.slice`, the goal condition, the three return shapes, and the rule that the worker commits `handoffs/<allocation-id>.md` (template `handoff.md`) on its branch before returning.

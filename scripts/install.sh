@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
-# sliceworks 0.7.0. Copy-install the skills (and, for Claude Code without the plugin, the agents) into a project
+# sliceworks 0.8.0. Copy-install the skills (and, for Claude Code without the plugin, the agents) into a project
 # or into the user's agent directories, for runtimes without a plugin system or when a plugin is not wanted.
 #
-#   scripts/install.sh <project-dir> --tools codex            # project scope: .agents/skills
+#   scripts/install.sh <project-dir> --tools codex            # project scope: .agents/skills and generated .codex/agents
+#   scripts/install.sh <project-dir> --tools codex --hooks    # also .codex/hooks.json running this checkout's hooks (not with the plugin)
 #   scripts/install.sh <project-dir> --tools codex,claude     # also .claude/skills and .claude/agents
 #   scripts/install.sh --user --tools codex                   # user scope: ~/.agents/skills
 #   scripts/install.sh <project-dir> --tools cursor --dry-run
@@ -12,11 +13,11 @@
 # SKILL.md keeps its metadata.source and metadata.version, which is what the update skill compares.
 set -eu
 LIB="$(cd "$(dirname "$0")/.." && pwd)"
-TARGET=""; TOOLS=""; USER_SCOPE=0; DRY=0; FORCE=0; DASH=0
-usage() { sed -n '3,14p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+TARGET=""; TOOLS=""; USER_SCOPE=0; DRY=0; FORCE=0; DASH=0; HOOKS=0
+usage() { sed -n '3,15p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 while [ $# -gt 0 ]; do
   case "$1" in
-    --tools) TOOLS="${2:-}"; shift 2;; --user) USER_SCOPE=1; shift;; --dry-run) DRY=1; shift;; --force) FORCE=1; shift;; --dashboard) DASH=1; shift;;
+    --tools) TOOLS="${2:-}"; shift 2;; --user) USER_SCOPE=1; shift;; --dry-run) DRY=1; shift;; --force) FORCE=1; shift;; --dashboard) DASH=1; shift;; --hooks) HOOKS=1; shift;;
     -h|--help) usage 0;; -*) echo "unknown flag $1" >&2; usage 1;; *) TARGET="$1"; shift;;
   esac
 done
@@ -38,6 +39,19 @@ old_ifs="$IFS"; IFS=','; for tool in $TOOLS; do IFS="$old_ifs"
   for s in "$LIB"/skills/*/; do copy "$s" "$TARGET/$sd/$(basename "$s")" "skill $(basename "$s")"; done
   ad="$(agents_dir "$tool")"
   if [ -n "$ad" ]; then for a in "$LIB"/agents/*.md; do copy "$a" "$TARGET/$ad/$(basename "$a")" "agent $(basename "$a" .md)"; done; fi
+  if [ "$tool" = codex ] && [ "$USER_SCOPE" -eq 0 ]; then
+    echo "  + agents -> .codex/agents (generated; agents.py check is the parity step)"
+    [ "$DRY" -eq 1 ] || python3 "$LIB/scripts/runtimes/codex/agents.py" sync --root "$TARGET" | sed 's/^/    /'
+    if [ "$HOOKS" -eq 1 ]; then
+      # Codex reads .codex/hooks.json; the commands run this checkout's hook bodies. Not with the plugin installed: twice.
+      if [ -e "$TARGET/.codex/hooks.json" ] && [ "$FORCE" -eq 0 ]; then echo "  = kept existing .codex/hooks.json"; skipped=$((skipped+1))
+      else
+        echo "  + hooks -> .codex/hooks.json (trust them in Codex with /hooks)"
+        [ "$DRY" -eq 1 ] || { mkdir -p "$TARGET/.codex"; sed "s#\${CLAUDE_PLUGIN_ROOT}#$LIB#g" "$LIB/hooks/hooks.json" > "$TARGET/.codex/hooks.json"; }
+        installed=$((installed+1))
+      fi
+    fi
+  fi
 done; IFS="$old_ifs"
 if [ "$DASH" -eq 1 ]; then
   [ "$USER_SCOPE" -eq 0 ] || { echo "error: --dashboard installs into a project, not the user scope" >&2; exit 1; }
@@ -47,4 +61,4 @@ if [ "$DASH" -eq 1 ]; then
   [ "$DRY" -eq 1 ] || rm -rf "$TARGET/scripts/sliceworks/dashboard/__pycache__"
 fi
 echo "installed: $installed, kept: $skipped"
-[ "$USER_SCOPE" -eq 1 ] || echo "Next: run the start skill in the project (adopt writes the configuration); for Codex, hooks and generated agents come with the dual profile (templates/codex-config.toml, scripts/runtimes/codex)."
+[ "$USER_SCOPE" -eq 1 ] || echo "Next: run the start skill in the project (adopt writes the configuration); for Codex read scripts/runtimes/codex/README.md (the adapter)."
