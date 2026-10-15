@@ -108,5 +108,36 @@ class Collector(unittest.TestCase):
         self.assertIn("MISSING-WORKTREE", run(self.root))
 
 
+class WorkerMetrics(unittest.TestCase):
+    def test_merge_is_explicit_idempotent_and_keeps_partial_lines_pending(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            source = root / "custom-run/codex/alloc-1/metrics/tiers.jsonl"
+            source.parent.mkdir(parents=True)
+            row = {"head_full": "a" * 40, "result": "pass", "tier": "t1"}
+            source.write_text(json.dumps(row) + "\n" + '{"unfinished":')
+            self.assertEqual(collect.merge_worker_metrics(root, "docs/process", "custom-run"), 1)
+            self.assertEqual(collect.merge_worker_metrics(root, "docs/process", "custom-run"), 0)
+            dest = root / "docs/process/metrics/tiers.jsonl"
+            self.assertEqual([json.loads(line) for line in dest.read_text().splitlines()], [row])
+            source.write_text(source.read_text() + 'true}\n')
+            self.assertEqual(collect.merge_worker_metrics(root, "docs/process", "custom-run"), 1)
+            self.assertEqual(len(dest.read_text().splitlines()), 2)
+
+    def test_non_object_and_symlink_metrics_are_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            source = root / ".run/codex/alloc-1/metrics/tiers.jsonl"
+            source.parent.mkdir(parents=True)
+            source.write_text('[]\n')
+            with self.assertRaises(ValueError):
+                collect.merge_worker_metrics(root, "docs/process", ".run")
+            source.unlink()
+            other = root / "other"; other.write_text('{}\n')
+            source.symlink_to(other)
+            with self.assertRaises(ValueError):
+                collect.merge_worker_metrics(root, "docs/process", ".run")
+
+
 if __name__ == "__main__":
     unittest.main()

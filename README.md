@@ -70,7 +70,7 @@ source = "https://github.com/sudo-sane/sliceworks.git"
 enabled = true
 ```
 
-Then restart Codex and trust the plugin's hooks (`/hooks`); the skills appear as `sliceworks` skills and the guards run on Codex's tool calls. This path is written from the Codex documentation and exercised by the tests with a stand-in `codex`; it has not yet run against a real Codex CLI, so treat the first run as a check.
+Then restart Codex and trust the plugin's hooks (`/hooks`); the skills appear as `sliceworks` skills and the guards run on Codex's tool calls. Launcher behavior is covered with a stand-in `codex`; the adapter records the installed CLI checks and their limitations.
 
 **By copy.** From a clone, into a project:
 
@@ -79,13 +79,17 @@ git clone https://github.com/sudo-sane/sliceworks
 sliceworks/scripts/install.sh /path/to/project --tools codex --hooks
 ```
 
-(`--hooks` writes `.codex/hooks.json` running the clone's hooks; leave it out when the plugin is installed, or every guard runs twice), or for every project, user scope:
+(`--hooks` writes `.codex/hooks.json` running the clone's hooks; use a single source of enforcement), or for every project, user scope:
 
 ```bash
 sliceworks/scripts/install.sh --user --tools codex
 ```
 
 The script copies the skills and generates the role agents into `.codex/agents`, never symlinks, never overwrites (`--force` to replace), and keeps the provenance stamps the `update` skill compares. `--tools codex,claude` also installs the agents into `.claude/agents` for a Claude Code setup without the plugin; `--tools cursor` targets `.cursor`.
+
+**A project-local copy with its own hooks.** Set `SW_PLUGIN_HOOKS=off` in the project's `.sliceworks/config.env`: the package's kill switch, budget, money, role and both Stop hooks exit silently, while session context may still print. Keep the project's own enforcement hooks enabled. In the project's `.claude/settings.json`, merge `"enabledPlugins": {"sliceworks@engineering-skills": false}` (use the actual installed marketplace name); disable the Codex plugin in that project's `.codex/config.toml` too if Codex loads it. Disabling plugin loading also removes duplicate skill names. A copy install whose only hooks call the package's hook bodies must leave `SW_PLUGIN_HOOKS=on`; setting it off would disable its only enforcement. See the [Codex adapter](scripts/runtimes/codex/README.md) for the exact migration steps.
+
+Writers have no network access. Set `SW_CODEX_BIN` to the CLI executable if `codex` is absent from PATH; a host-side request runner brokers database gates without a coordinator model turn. Configure `SW_PREHANDOFF_CMD` to run lint and every database-free test for changed packages before HOLD or CANDIDATE. Project verifiers must honor the writable metric paths the dispatcher exports, and the coordinator imports those rows with `collect.py --merge-worker-metrics`. The adapter documents the request protocol and verifier contract.
 
 **What Codex gets today.** The twenty skills and the method, templates and schemas they read; the same hooks (kill switch, budget and money guards, role guard, the T0 stop gate); the role agents generated as `.codex/agents/*.toml` with a parity check; implementers and reviewers as separate `codex exec` worker processes in their own worktrees and sandboxes (`scripts/runtimes/codex/dispatch.sh`, `status.sh`); and a Stop hook that keeps the coordinator going while workers run. The Codex adapter, [`scripts/runtimes/codex/README.md`](scripts/runtimes/codex/README.md), maps each Claude Code mechanism the skills name to its Codex counterpart and lists the known limits. To update a copy install, re-run `install.sh` with `--force`, or run the `update` skill, which replaces stale copies and keeps hand-edited ones.
 

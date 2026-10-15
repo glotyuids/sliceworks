@@ -1,7 +1,8 @@
 #!/bin/sh
-# sliceworks 0.2.0. Kill switch (method 10): while the STOP file exists, every Agent, Bash, Edit and Write
+# sliceworks 0.8.1. Kill switch (method 10): while the STOP file exists, every Agent, Bash, Edit and Write
 # call in the project is refused, so dispatch and edits halt mechanically. Remove the file to resume.
 input="$(cat)"; . "$(dirname "$0")/lib.sh"; sw_load_config || exit 0
+sw_plugin_hooks_enabled || exit 0
 stop="$SW_ROOT/$SW_STOP_FILE"
 if [ -f "$stop" ]; then
   note="$(head -c 200 "$stop" 2>/dev/null | tr '\n' ' ')"

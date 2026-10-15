@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sliceworks 0.6.0. The collector (method chapter 19): completion read from durable artifacts, never from a message.
+# sliceworks 0.8.1. The collector (method chapter 19): completion read from durable artifacts, never from a message.
 #   collect.py --root <repo> [--state-dir docs/process] [--json]
 # For every open or stopped allocation prints one line:
 #   ALLOC <id> <STATE> <detail>
@@ -10,8 +10,9 @@
 # candidate but the evidence does not prove it), STOPPED-NO-HANDOFF (nothing runs and nothing was written),
 # MISSING-WORKTREE. After the allocations it prints UNREGISTERED lines for worktrees, pid files and result-less logs
 # that no open allocation owns, so an empty registry is never a clean report.
-# Detection only; nothing is written and no message is sent.
+# Detection is read-only by default. --merge-worker-metrics imports staged rows as the coordinator; no message is sent.
 import argparse, json, os, pathlib, re, subprocess, sys
+import fcntl
 
 
 def git(cwd, *args):
@@ -167,11 +168,43 @@ def assess(root, state_dir, alloc):
     return "STOPPED-NO-HANDOFF", f"handoff present but result unreadable: {res or 'none'}"
 
 
+def merge_worker_metrics(root, state_dir, run_dir):
+    """Coordinator-only opt-in import; preserve rows and make repeated collection idempotent."""
+    target = root / state_dir / "metrics"
+    target.mkdir(parents=True, exist_ok=True)
+    merged = 0
+    # Serialize coordinator imports so two collectors never duplicate a row.
+    with (target / ".worker-merge.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        for source in sorted((root / run_dir / "codex").glob("*/metrics/*.jsonl")):
+            if source.is_symlink() or not re.fullmatch(r"[a-z][a-z0-9_-]*\.jsonl", source.name):
+                raise ValueError(f"invalid worker metrics path: {source}")
+            raw = source.read_text()
+            # A running writer may be between writes; consume complete lines only.
+            lines = raw.splitlines() if raw.endswith("\n") else raw.splitlines()[:-1]
+            rows = [json.loads(line) for line in lines if line.strip()]
+            if any(not isinstance(row, dict) for row in rows):
+                raise ValueError(f"worker metrics must contain objects: {source}")
+            dest = target / source.name
+            if dest.is_symlink():
+                raise ValueError(f"symlink metrics destination: {dest}")
+            existing = {json.dumps(json.loads(line), sort_keys=True) for line in dest.read_text().splitlines() if line.strip()} if dest.exists() else set()
+            with dest.open("a") as out:
+                for row in rows:
+                    key = json.dumps(row, sort_keys=True)
+                    if key not in existing:
+                        out.write(json.dumps(row) + "\n")
+                        existing.add(key)
+                        merged += 1
+    return merged
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".")
     ap.add_argument("--state-dir", default=None)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--merge-worker-metrics", action="store_true", help="coordinator: import staged worker rows before assessing allocations")
     a = ap.parse_args(argv)
     root = pathlib.Path(a.root).resolve()
     state_dir = a.state_dir
@@ -182,12 +215,17 @@ def main(argv=None):
             m = re.search(r"^SW_STATE_DIR=(\S+)", cfg.read_text(), re.M)
             if m:
                 state_dir = m.group(1).strip('"')
-    worktree_root, outputs_dir = ".claude/worktrees", "outputs"
+    worktree_root, outputs_dir, run_dir = ".claude/worktrees", "outputs", ".run"
     cfg = root / ".sliceworks" / "config.env"
     if cfg.exists():
         t = cfg.read_text()
         m = re.search(r"^SW_WORKTREE_ROOT=(\S+)", t, re.M); worktree_root = m.group(1).strip('"') if m else worktree_root
         m = re.search(r"^SW_OUTPUTS_DIR=(\S+)", t, re.M); outputs_dir = m.group(1).strip('"') if m else outputs_dir
+        m = re.search(r"^SW_RUN_DIR=(\S+)", t, re.M); run_dir = m.group(1).strip('"') if m else run_dir
+    if a.merge_worker_metrics:
+        if os.environ.get("SW_ROLE"):
+            raise SystemExit("collect: only the coordinator merges worker metrics")
+        merge_worker_metrics(root, state_dir, run_dir)
     adir = root / state_dir / "allocations"
     rows = []; open_allocs = []
     for f in sorted(adir.glob("*.json")) if adir.is_dir() else []:

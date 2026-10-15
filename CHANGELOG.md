@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.1
+
+- Project-owned hooks can suppress all six package enforcement entry points with `SW_PLUGIN_HOOKS=off` (default `on`); session context remains available. Copy adoption documents disabling the plugin in the project settings as well, to remove duplicate skill names.
+- Codex writers keep network access disabled. `SW_CODEX_NETWORK=1` and unverified `local` modes now fail closed; security overrides in `SW_CODEX_EXEC_ARGS` are refused. The installed CLI's local-proxy probe could not establish local TCP isolation, so `gate-runner.sh` and its deterministic host supervisor broker a T1 request file through the configured project verifier and its existing verification-slot admission, returning a result and log without a model turn.
+- Before HOLD or CANDIDATE, implementers run lint and all database-free tests for changed packages through `SW_PREHANDOFF_CMD` (empty defaults to T0), and report commands, results and logs. The Stop gate checks HOLDs too; an unavailable-command exemption requires the exact command and captured output. Candidates retain their original T0 gate.
+- `SW_CODEX_BIN` selects the CLI (default `codex` on PATH), with macOS bundle guidance on failure. The dispatcher records allocation PIDs and thread ids while a worker is live, uses `sandbox_mode` for resume (the installed CLI has no resume `-s`), and refuses writers in the coordinator checkout. Worker metrics land under the run directory via `SW_TIERS_FILE` and `SW_METRICS_DIR`; the coordinator imports complete rows idempotently with `collect.py --merge-worker-metrics`.
+- The runtime adapter records CLI `0.162.0-alpha.17.2`, the exact attempted network keys, the fallback protocol and migration requirements for project-owned verifiers and dispatchers. Hook and runtime regression tests cover these paths.
+
 ## 0.8.0
 
 - Codex beyond one chat (the Codex adapter, `scripts/runtimes/codex/README.md`, maps every Claude Code mechanism the skills name). Until now Codex got the skills only: one session played every role, with no guards.

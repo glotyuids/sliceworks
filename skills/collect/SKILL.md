@@ -4,14 +4,14 @@ description: Read what every worker has actually finished without asking anyone 
 license: Apache-2.0
 metadata:
   source: sudo-sane/sliceworks
-  version: 0.5.0
+  version: 0.8.1
 ---
 
 # Collect: completion from artifacts
 
 Method: `method/19-allocation-and-completion.md`. Script: `${CLAUDE_PLUGIN_ROOT}/scripts/collect.py`.
 
-1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/collect.py" --root "$PWD"`. One line per open allocation, from evidence alone; the script writes nothing and sends nothing.
+1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/collect.py" --root "$PWD"`. One line per open allocation, from evidence alone; ordinary collection writes nothing and sends nothing. For Codex worker telemetry, run with `--merge-worker-metrics` as the coordinator first: it imports complete JSONL objects from `<run>/codex/<allocation>/metrics/` into `<state-dir>/metrics/`, idempotently under a collector lock. Never run this write mode in a worker. Inspect gate requests and `gate-result.json` in the same allocation run directory; match request id and head before accepting a result.
 2. Act on each state, without a message to the worker:
    - `RUNNING` or `QUEUED`: ongoing work; a live test or a wait in a resource queue is not a stall. Do nothing, and never start a duplicate writer.
    - `CANDIDATE-UNVERIFIED`: the handoff claims a pass the log or the tiers row does not show; run the required gate yourself on the handoff head, or return the slice to repair with the discrepancy.
