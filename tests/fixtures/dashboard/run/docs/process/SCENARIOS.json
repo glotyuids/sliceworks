@@ -1,0 +1,6 @@
+[
+  {"id": "S1", "title": "Keep a record", "stage": "A Capture", "roles": ["user"], "segments": ["solo"], "milestone": "M1", "increment": 0, "proves": ["R-001", "R-002"]},
+  {"id": "S2", "title": "Find a record", "stage": "B Find", "roles": ["user"], "segments": ["solo"], "milestone": "M1", "increment": 1, "proves": ["R-003", "R-004"]},
+  {"id": "S3", "title": "Rank results", "stage": "B Find", "roles": ["user"], "segments": [], "milestone": "M1", "increment": 1, "proves": ["R-005"]},
+  {"id": "S4", "title": "Share a result", "stage": "C Share", "roles": ["user", "guest"], "segments": [], "milestone": "M2", "increment": 2, "proves": ["R-007"]}
+]

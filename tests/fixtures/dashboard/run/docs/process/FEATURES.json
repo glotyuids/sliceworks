@@ -1,0 +1,9 @@
+[
+  {"id": "R-001", "increment": 0, "slice": "slice-01", "title": "The service answers its health check", "cwd": ".", "check": "make t-health", "passes": true, "evidence": {"log": "x"}, "human_act": null, "tasks": [], "kind": "scenario", "milestone": "M1"},
+  {"id": "R-002", "increment": 0, "slice": "slice-02", "title": "A stored record is read back unchanged", "cwd": ".", "check": "make t-store", "passes": true, "evidence": {"log": "x"}, "human_act": null, "tasks": [], "kind": "scenario", "milestone": "M1"},
+  {"id": "R-003", "increment": 1, "slice": "slice-03", "title": "A search returns the matching records", "cwd": ".", "check": "make t-search", "passes": false, "evidence": null, "human_act": null, "tasks": [], "kind": "scenario", "milestone": "M1"},
+  {"id": "R-004", "increment": 1, "slice": "slice-04", "title": "An imported CSV becomes records", "cwd": ".", "check": "make t-import", "passes": true, "evidence": {"log": "x"}, "human_act": null, "tasks": [], "kind": "scenario", "milestone": "M1"},
+  {"id": "R-005", "increment": 1, "slice": "slice-05", "title": "Better matches rank first", "cwd": ".", "check": "make t-rank", "passes": false, "evidence": null, "human_act": null, "tasks": [], "kind": "criterion", "milestone": "M1"},
+  {"id": "R-006", "increment": 1, "slice": null, "title": "Import on the staging database", "cwd": ".", "check": "make t-staging", "passes": false, "evidence": null, "human_act": "NH-01", "tasks": [], "kind": "gate", "milestone": "M1"},
+  {"id": "R-007", "increment": 2, "slice": null, "title": "A shared link opens for a second user", "cwd": ".", "check": "make t-share", "passes": false, "evidence": null, "human_act": null, "tasks": [], "kind": "scenario", "milestone": "M2"}
+]

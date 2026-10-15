@@ -1,0 +1,6 @@
+[
+  {"id": "DEC-PD-001", "increment": null, "slice": null, "title": "Process decision PD-001 is defaulted and inside its veto window", "cwd": ".", "check": "sw-check decision PD-001", "passes": true, "evidence": {"log": "x"}, "human_act": null, "tasks": [], "kind": "decision", "milestone": "M1"},
+  {"id": "G-01", "increment": 2, "slice": "slice-01", "title": "The in-flight set is committed and the full gate passes", "cwd": ".", "check": "make check", "passes": false, "evidence": null, "human_act": null, "tasks": [], "kind": "gate", "milestone": "M1"},
+  {"id": "G-02", "increment": 2, "slice": "slice-02", "title": "Every red package of the last gate is green", "cwd": ".", "check": "make check", "passes": false, "evidence": null, "human_act": "NH-01", "tasks": [], "kind": "scenario", "milestone": "M1"},
+  {"id": "G-03", "increment": 3, "slice": "slice-03", "title": "The trace export matches the summary counts", "cwd": ".", "check": "make t-export", "passes": false, "evidence": null, "human_act": null, "tasks": [], "kind": "eval", "milestone": "M1"}
+]

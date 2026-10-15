@@ -1,0 +1,5 @@
+[
+  {"id": "SC-1", "title": "A whole cycle survives a restart", "stage": "Cycle", "roles": ["owner"], "milestone": "M1", "increment": 2, "proves": ["G-01", "G-02"]},
+  {"id": "SC-2", "title": "A run can be inspected afterwards", "stage": "Cycle", "roles": ["maintainer"], "milestone": "M1", "increment": 3, "proves": ["G-03"]},
+  {"id": "SC-3", "title": "An old plan was dropped", "stage": "Cycle", "roles": ["owner"], "milestone": "M1", "increment": null, "proves": [], "status": "thinned"}
+]

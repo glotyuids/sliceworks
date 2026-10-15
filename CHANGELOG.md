@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0
+
+- Dashboard: the package now ships the generator (`dashboard/`, standard library only, collect → compute → render), ported from the first run's page with its tokens, CSS and components unchanged: progress, scenario, budget and money tiles, hold banners, one fold per increment with a segmented bar, a timeline and slice cards with a six-step stepper, the owner's inbox, veto clocks, open questions and milestones. Until now an adopting project had to write its own page, so every project looked different and a published copy was restyled. Everything project-specific moved into configuration (`SW_PROJECT_NAME`, `SW_DASHBOARD_OUT`, `SW_DASHBOARD_PUBLISH_CMD`, `SW_DASHBOARD_PUBLISH_EVERY`; `SW_TIMEZONE` now accepts offsets); the first run's legacy block, code-size baseline and budget-card variants were dropped.
+- The slice-state vocabulary is defined once, in `dashboard/compute.py` (stage, colour and progress credit per state, including `paused`, `stopped`, `hold`, `waiting`, `green`, `cut`). A state outside it renders `UNKNOWN <state>` with a banner. Cut slices leave the progress total. Increments that `MILESTONES.md` lists as closed before adoption show as closed folds and a separate "before adoption" segment, and are not counted. Tables with empty cells (`| |`) parse, and slice ids may carry a name (`slice-01 land-inflight-set`).
+- `scripts/dashboard-loop.sh` rebuilds the page every 30 seconds, stops on the kill switch and runs the project's publish command. `scripts/install.sh <project> --dashboard` copies both into `scripts/sliceworks/`. `adopt` installs and renders it and forbids project-written or restyled dashboards. `resume` and the START template name the loop command. Method chapter 9 describes the page and its rules, including that a shared copy is the generated file byte for byte.
+- Thirty-two dashboard tests on two fixture projects (one mid-run, one freshly adopted with money and named slices) check the parsed page structure and the computed numbers.
+
 ## 0.6.1
 
 - From the second Codex report (analysis of 2026-10-13): the allocation record distinguishes the responsible chat from the execution session, carries a queue marker, the base commit's gate health (`baseline` with known debt assigned), a `mode` (`full`, `prepare-only`, `review`) and `unblocks` for non-product work; the handoff classifies every failure as introduced, inherited, setup or unproven; the tier-run record gains the full commit, the base, the command, the exit code and the proof state.

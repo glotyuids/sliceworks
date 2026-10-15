@@ -41,13 +41,13 @@ schemas/                     JSON Schemas for the state-file rows and telemetry
 method/                      the process, generic
 rationale/                   why each rule exists: research findings, lessons, sources
 harness/                     Python: parsers, schemas, telemetry (phase 1)
-dashboard/                   Python: collect, compute, render (phase 4)
-scripts/                     survey.py (inventory and dispatcher), collect.py (completion from artifacts), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins), release.sh (the release in one command); the verification harness and runtime adapters follow (phase 2)
-tests/                       hook behaviour tests, lint tests; later the schema tests, red-team corpus, fixture repository
+dashboard/                   Python, standard library: collect, compute, render; run as `python3 dashboard --root <repo>`, installed into projects by `scripts/install.sh --dashboard`
+scripts/                     survey.py (inventory and dispatcher), collect.py (completion from artifacts), check-design-docs.py (lints), install.sh (copy-install for runtimes without plugins, and the dashboard), dashboard-loop.sh (the 30-second rebuild), release.sh (the release in one command); the verification harness and runtime adapters follow (phase 2)
+tests/                       hook behaviour tests, lint tests, dashboard tests on two fixture projects (tests/fixtures/dashboard); later the schema tests, red-team corpus, fixture repository
 evals/                       claude plugin eval cases
 docs/design/                 dated design notes, frozen
 ```
 
 ## Status
 
-0.6.0 closes the gaps of the second Codex report (two-actor allocations, evidence-checked completion, messages as dispatches, failure classes, unblocks); 0.5.0 adds allocation records, handoffs and the collector (chapter 19); 0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.
+0.7.0 ships the dashboard (method chapter 9: the first run's page as the package's generator, installed by `adopt`); 0.6.0 closes the gaps of the second Codex report (two-actor allocations, evidence-checked completion, messages as dispatches, failure classes, unblocks); 0.5.0 adds allocation records, handoffs and the collector (chapter 19); 0.4.0 binds the package to the `engineering-skills` library (marketplace entry there, survey detection and phase bindings here); 0.3.0 adds the entry sequence (survey, prepare, start) and the intake pipeline; 0.2.0: method, rationale, manifest, agents, hooks, skills, templates, schemas, the design-doc lint and the hook tests. The depth plan (parser library, harness scripts, dashboard) is `docs/design/2026-10-12-extraction-analysis.md` section 10; the breadth plan is `docs/design/2026-10-12-lifecycle-coverage.md` section 8. Run `sh tests/test_hooks.sh` and `python3 -m unittest discover -s tests` before a release.

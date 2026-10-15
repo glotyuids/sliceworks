@@ -1,6 +1,6 @@
 # Starting and resuming the coordinator
 
-<!-- sliceworks 0.2.0 -->
+<!-- sliceworks 0.7.0 -->
 
 ## Before the first start (owner, once)
 
@@ -20,13 +20,13 @@ The same prompt is the recovery prompt after a restart, a usage-limit pause or a
 
 ## What the owner sees
 
-The dashboard and STATUS.md; NEEDS-HUMAN.md when an item is added; OWNER-DECISIONS.md as defaults are applied; the demo artifact and the retrospective at each increment close. To stop everything: create `<state-dir>/STOP`. To resume: delete it and run `/sliceworks:resume`.
+The dashboard (`<state-dir>/dashboard.html` unless `SW_DASHBOARD_OUT` says otherwise; it reloads itself every 30 seconds) and STATUS.md; NEEDS-HUMAN.md when an item is added; OWNER-DECISIONS.md as defaults are applied; the demo artifact and the retrospective at each increment close. To stop everything: create `<state-dir>/STOP`. To resume: delete it and run `/sliceworks:resume`.
 
 ## Background processes
 
 | Process | When | Purpose |
 |---|---|---|
-| dashboard loop | always | rebuilds the dashboard every 30 s, no model turn |
+| dashboard loop | always | `sh scripts/sliceworks/dashboard-loop.sh 30`: rebuilds the dashboard every 30 s and publishes it through `SW_DASHBOARD_PUBLISH_CMD` if set, no model turn |
 | wake timer | while any slice is active | wakes the coordinator every 15 min with STALL, STALE and READY lines; the coordinator records a reading and restarts it |
 | hold timer | during a budget hold | sleeps until the window resets, then wakes the coordinator |
 | T2 after a merge | after each merge | integration check of the merged head in a clean worktree |

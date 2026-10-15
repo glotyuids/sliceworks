@@ -4,7 +4,7 @@ description: Start or resume the sliceworks coordinator in a project that adopte
 license: Apache-2.0
 metadata:
   source: glotyuids/sliceworks
-  version: 0.5.0
+  version: 0.7.0
 ---
 
 # Resume the coordinator
@@ -17,7 +17,7 @@ Read `.sliceworks/config.env` for the paths below. If the kill switch file exist
 3. **Apply holds.** At or above the dispatch hold do not dispatch anything. At or above the stop line stop every running implementer, write the hold into `STATE.md`, start the hold timer in the background and end the turn; when its completion wakes you, record a fresh reading and continue from step 1.
 4. **Re-dispatch.** For every allocation the collector reports as stopped without a handoff, or every slice recorded `active` or `repair` whose implementer is not running, dispatch the `slice-implementer` agent from its branch with its brief and the `PROGRESS.md` tail, with the dispatch prompt of `method/07-communication.md` (`BRIEF`). Remove any `.blocked` marker first.
 5. **Keep one ready brief per writer.** Run the ready detector; write briefs with the `brief` skill for slices that could start; dispatch into free writer slots, preferring the fewest shared hot areas.
-6. **Background timers.** Start the dashboard loop (always) and the wake timer (while any slice is active) with `run_in_background`; when the wake timer completes, record a reading, act on its `STALL`, `STALE` and `READY` lines, and restart it.
+6. **Background timers.** Start the dashboard loop (always: `sh scripts/sliceworks/dashboard-loop.sh 30`, installed by `adopt`) and the wake timer (while any slice is active) with `run_in_background`; when the wake timer completes, record a reading, act on its `STALL`, `STALE` and `READY` lines, and restart it.
 7. **Update the recovery file** at every dispatch, merge and before an expected compaction.
 8. **Goal.** Set the goal for the current increment: every ledger row of the increment is `passes: true` or `blocked_on_human`, the demo command passed, and the retrospective file exists. When the milestone's last increment closes, run the `accept` skill instead of starting another increment.
 

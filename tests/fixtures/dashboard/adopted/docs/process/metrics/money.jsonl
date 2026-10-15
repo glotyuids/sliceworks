@@ -1,0 +1,2 @@
+{"at":"2026-09-30T10:00:00Z","event":"provider","amount":1.25,"currency":"USD","authorization":"D-123"}
+{"at":"2026-10-01T10:00:00Z","event":"eval","amount":4.25,"currency":"USD","authorization":"D-123"}
