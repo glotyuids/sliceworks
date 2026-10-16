@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import datetime as dt
 import html
+import posixpath
 import re
 
 from . import compute as C
@@ -19,6 +20,60 @@ def esc(v) -> str:
 def short(s, n: int = 150) -> str:
     s = re.sub(r"`", "", str(s or ""))
     return s if len(s) <= n else s[: n - 1].rsplit(" ", 1)[0] + "…"
+
+
+_SLICE_REF = re.compile(r"\bslice-?\d+[a-z0-9-]*\b")
+_MD_LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
+
+
+def _slice_links(text: str) -> str:
+    out, pos = [], 0
+    for m in _SLICE_REF.finditer(text):
+        out.append(esc(text[pos:m.start()]))
+        sid = m.group(0) if m.group(0).startswith("slice-") else "slice-" + m.group(0)[5:]
+        out.append(f'<a class="sref" href="#s-{esc(sid)}">{esc(m.group(0))}</a>')
+        pos = m.end()
+    out.append(esc(text[pos:]))
+    return "".join(out)
+
+
+def linkify(text, links: dict | None = None) -> str:
+    """Escape text; markdown links become links to the repository file (relative to the state directory), slice
+    ids become in-page links to their cards. links: {"base": URL prefix of the repository root, or "" for a
+    page-relative path; "page_to_root": path from the page's directory to the root; "state_rel": state dir}."""
+    links = links or {}
+    text = re.sub(r"`", "", str(text or ""))
+    out, pos = [], 0
+    for m in _MD_LINK.finditer(text):
+        out.append(_slice_links(text[pos:m.start()]))
+        label, target = m.group(1), m.group(2)
+        if not re.match(r"^[a-z][a-z0-9+.-]*:|^#|^/", target):
+            rel = posixpath.normpath(posixpath.join(links.get("state_rel", "."), target))
+            base = links.get("base") or (links.get("page_to_root", ".").rstrip("/") + "/")
+            target = base + rel
+        out.append(f'<a href="{esc(target)}">{esc(label)}</a>')
+        pos = m.end()
+    out.append(_slice_links(text[pos:]))
+    return "".join(out)
+
+
+def unlink_missing(page_html: str) -> str:
+    """Drop in-page slice links whose card is not on the page (no dead anchors)."""
+    present = set(re.findall(r'id="(s-[^"]+)"', page_html))
+    return re.sub(r'<a class="sref" href="#(s-[^"]+)">([^<]*)</a>',
+                  lambda m: m.group(0) if m.group(1) in present else m.group(2), page_html)
+
+
+def nh_item(r: dict, links: dict | None, words: int, show_inc: bool) -> str:
+    """One NEEDS-HUMAN row: the summary is the short act; expanding shows the full act and its fields."""
+    urg = r.get("urgency", "")
+    cls = "urgent" if "urgent" in urg or urg.startswith("now") else ""
+    inc = f'<span class="muted">inc {esc(r.get("increment"))}</span> ' if show_inc else ""
+    fields = "".join(f'<div><span class="muted">{esc(k)}:</span> {linkify(r.get(k, ""), links)}</div>'
+                     for k in ("unblocks", "urgency", "added") if r.get(k))
+    return (f'<li class="{cls}" id="nh-{esc(r["id"])}"><details class="nh"><summary><code>{esc(r["id"])}</code> {inc}'
+            f'{esc(short(r.get("act", ""), words))}<span class="muted"> · {esc(short(urg, 40))}</span></summary>'
+            f'<div class="nhbody"><p>{linkify(r.get("act", ""), links)}</p>{fields}</div></details></li>')
 
 
 def fmt_dur(sec) -> str:
@@ -77,6 +132,9 @@ def time_axis(t0: dt.datetime, t1: dt.datetime, tz: dt.tzinfo, max_ticks: int = 
 
 
 CSS = """
+details.nh>summary{cursor:pointer;list-style:none}details.nh>summary::-webkit-details-marker{display:none}
+details.nh>summary::before{content:"▸ ";color:var(--muted,#888)}details.nh[open]>summary::before{content:"▾ "}
+.nhbody{margin:4px 0 8px 14px;font-size:.92em;overflow-wrap:anywhere}.nhbody p{margin:2px 0 4px}a.sref{text-decoration:none;border-bottom:1px dotted}
 :root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1b;--muted:#6b6b66;--line:#e4e3de;--accent:#2f6fde;
 --ok:#1f8a4c;--okbg:#e3f3e9;--work:#2f6fde;--workbg:#e5eefc;--warn:#b26a00;--warnbg:#fbefd9;
 --bad:#c0392b;--badbg:#fbe4e1;--idle:#7a7a74;--idlebg:#efefec;--readybg:#f1e9fb;--ready:#7a3fc2;--fill:#8a8a84}
@@ -220,6 +278,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
 
     name = snap["name"]
     features, slices = snap["features"], C.slices_of(snap)
+    links = snap.get("links") or {}
     frow = {f.get("id"): f for f in features}
     incr, ms = snap["increment"], snap["milestone"]
     try:
@@ -328,10 +387,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
     def acts_html(rs: list) -> str:
         if not rs:
             return ""
-        items = "".join(
-            f'<li class="{"urgent" if "urgent" in r.get("urgency", "") or r.get("urgency", "").startswith("now") else ""}" title="{esc(r.get("act", ""))}">'
-            f'<code>{esc(r["id"])}</code> {esc(short(r.get("act", ""), 140))}'
-            f'<span class="muted"> · {esc(short(r.get("urgency", ""), 40))}</span></li>' for r in rs)
+        items = "".join(nh_item(r, links, 140, False) for r in rs)
         return f'<div class="acts"><em>Needs you ({len(rs)})</em><ul>{items}</ul></div>'
 
     def seg_bar(n: int, inc: dict) -> str:
@@ -382,7 +438,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
             line = f'merged {esc(ts_short(s.get("merged", "")))} · ' + (f"T2 green {esc(t2)}" if t2 else "T2 pending")
             el = elapsed(s)
             line += (f" · took {fmt_dur(el)}" if el else "") + (f" · {eff_txt(sid)}" if eff_txt(sid) else "")
-            return f'<article class="slice compact">{hdr}<div class="meta">{line}</div>{details}</article>'
+            return f'<article class="slice compact" id="s-{esc(sid)}">{hdr}<div class="meta">{line}</div>{details}</article>'
         steps, last = [], ""
         for i, (key, label) in enumerate(C.STAGES):
             t = ts_short(s.get(key, ""))
@@ -394,10 +450,10 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
         bits = []
         tasks = s.get("tasks", "")
         if C.stamped(tasks):
-            bits.append(esc(short(tasks, 120)))
+            bits.append(linkify(short(tasks, 120), links))
         deps = s.get("depends_hard", "")
         if C.stamped(deps) and deps.strip().lower() != "none":
-            bits.append(f"after {esc(short(deps, 60))}")
+            bits.append(f"after {linkify(short(deps, 60), links)}")
         if s.get("rounds") not in ("", "0", "-", None):
             bits.append(f'rounds {esc(s["rounds"])}')
         el = elapsed(s)
@@ -407,7 +463,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
             bits.append(eff_txt(sid))
         if last:
             bits.append(esc(last))
-        return (f'<article class="slice">{hdr}<ol class="stepper">{"".join(steps)}</ol>'
+        return (f'<article class="slice" id="s-{esc(sid)}">{hdr}<ol class="stepper">{"".join(steps)}</ol>'
                 f'<div class="meta">{" · ".join(bits)}</div>{details}</article>')
 
     # ---- user scenarios ----
@@ -612,10 +668,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
                          + '</div>' for h in snap["holds"])
 
     # ---- the owner's view: inbox, veto clocks, questions, milestones, contracts, log ----
-    needs_html = "".join(
-        f'<li class="{"urgent" if "urgent" in r.get("urgency", "") or r.get("urgency", "").startswith("now") else ""}" title="{esc(r.get("act", ""))}">'
-        f'<code>{esc(r["id"])}</code> <span class="muted">inc {esc(r.get("increment"))}</span> {esc(short(r.get("act", ""), 120))}'
-        f'<span class="muted"> · {esc(short(r.get("urgency", ""), 30))}</span></li>' for r in open_needs) or '<li class="muted">nothing open</li>'
+    needs_html = "".join(nh_item(r, links, 120, True) for r in open_needs) or '<li class="muted">nothing open</li>'
     clocks = C.veto_clocks(snap, now, tz)
     clocks_html = "".join(
         f'<li title="{esc(d["title"])}"><code>{esc(d["id"])}</code> <span class="chip {"warn" if d["left"] <= 1 else "ready"}">'
@@ -646,7 +699,7 @@ def page(snap: dict, now: dt.datetime, history: list[dict] | None = None) -> str
 
     slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-") or "project"
     tiles_cls = "tiles four" if money_tile else "tiles"
-    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+    return unlink_missing(f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30">
 <title>{esc(name)} progress</title><style>{CSS}</style></head><body><main>
 <header class="hd"><div class="hrow"><h1>{esc(name)}</h1>
@@ -678,7 +731,7 @@ try{{var v=localStorage.getItem(K+d.id);if(v==="1")d.open=true;else if(v==="0")d
 d.addEventListener("toggle",function(){{try{{localStorage.setItem(K+d.id,d.open?"1":"0");}}catch(e){{}}}});}});
 var t=document.querySelector("a.tile.scov"),p=document.getElementById("d-scenarios");
 if(t&&p)t.addEventListener("click",function(ev){{ev.preventDefault();p.open=true;p.scrollIntoView({{behavior:"smooth",block:"start"}});}});}})();
-</script></body></html>"""
+</script></body></html>""")
 
 
 def heading_local(h: str, tz: dt.tzinfo) -> str:
