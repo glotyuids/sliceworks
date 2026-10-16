@@ -132,6 +132,37 @@ class Vocabulary(unittest.TestCase):
         self.assertEqual(t.astimezone(compute.zone("UTC")).hour, 12)
 
 
+class NeedsAndLinks(unittest.TestCase):
+    LINKS = {"base": "", "state_rel": "docs/process", "page_to_root": "../.."}
+
+    def test_markdown_link_resolves_from_the_state_dir(self):
+        out = render.linkify("Review [the patch](../../outputs/x/p.patch) now", self.LINKS)
+        self.assertIn('<a href="../../outputs/x/p.patch">the patch</a>', out)
+        based = render.linkify("[d](DECISIONS.md)", dict(self.LINKS, base="https://example.test/r/blob/main/"))
+        self.assertIn('href="https://example.test/r/blob/main/docs/process/DECISIONS.md"', based)
+        self.assertIn('href="https://x.test/a"', render.linkify("[a](https://x.test/a)", self.LINKS))
+
+    def test_slice_ids_link_to_cards_and_missing_cards_unlink(self):
+        out = render.linkify("unblocks slice-01 and slice99 <b>", self.LINKS)
+        self.assertIn('<a class="sref" href="#s-slice-01">slice-01</a>', out)
+        self.assertIn('&lt;b&gt;', out)
+        page = render.unlink_missing('<article id="s-slice-01"></article>' + out)
+        self.assertIn('href="#s-slice-01"', page)
+        self.assertNotIn('href="#s-slice-99"', page)
+        self.assertIn("slice99", page)
+
+    def test_needs_item_expands_to_the_full_act(self):
+        act = "word " * 60 + "[the patch](p.patch)"
+        li = render.nh_item({"id": "NH-07", "act": act, "unblocks": "slice-02", "urgency": "now", "added": "2026-10-15",
+                             "increment": "2"}, self.LINKS, 40, True)
+        self.assertIn('<details class="nh">', li)
+        self.assertIn("…", li.split("</summary>")[0])
+        body = li.split("</summary>")[1]
+        self.assertIn('href="../../docs/process/p.patch"', body)
+        self.assertIn('href="#s-slice-02"', body)
+        self.assertIn('class="urgent"', li)
+
+
 class RunFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -215,6 +246,10 @@ class RunFixture(unittest.TestCase):
         cards = [c for two in self.page.all("div", "two") for c in two.children]
         heads = [c.first("h4").text for c in cards]
         self.assertIn("Needs a human (1 open)", heads)
+        needs = next(c for c in cards if c.first("h4").text.startswith("Needs a human"))
+        self.assertTrue(needs.all("details", "nh"), "each open act expands to its full text")
+        for card in self.page.all("article", "slice"):
+            self.assertTrue(card.attrs.get("id", "").startswith("s-slice"), "slice cards are link targets")
         self.assertIn("Veto clocks (1 open)", heads)
         clocks = next(c for c in cards if c.first("h4").text.startswith("Veto clocks"))
         self.assertIn("D-001", clocks.text_all())

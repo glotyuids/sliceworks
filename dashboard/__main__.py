@@ -46,6 +46,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"dashboard: --now {a.now!r} is not an ISO time", file=sys.stderr)
         return 2
     snap = collect.snapshot(root, cfg, state_dir)
+    try:
+        state_rel = state_dir.relative_to(root).as_posix()
+    except ValueError:
+        state_rel = state_dir.as_posix()
+    snap["links"] = {"base": cfg.get("SW_DASHBOARD_LINK_BASE", ""), "state_rel": state_rel,
+                     "page_to_root": Path(os.path.relpath(root, out.resolve().parent)).as_posix()}
     hist_file = root / cfg.get("SW_RUN_DIR", ".run") / "progress-history.jsonl"
     history = [] if a.no_history else collect.jsonl(hist_file)
     html = render.page(snap, now, history)

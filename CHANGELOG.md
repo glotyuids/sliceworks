@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Dashboard: each "Needs a human" act (the owner's inbox and the per-increment "Needs you" lists) is now a fold. The summary keeps the short act; expanding it shows the full act with its unblocks, urgency and added date. Slice ids in acts and slice task/dependency lines link to that slice's card (cards carry `id="s-<slice>"`); a link to a card not on the page falls back to plain text. Markdown links in acts resolve to the repository file, relative to the state directory: page-relative by default, or under the new optional `SW_DASHBOARD_LINK_BASE` (repository root URL) so a published page can point at the hosted repository.
+
 ## 0.8.2
 
 - **Security: adopters must take 0.8.2.** The 0.8.0 and 0.8.1 Codex writer roots exposed the whole main `.git` directory. A sandboxed writer could plant executable Git configuration or hooks that an unsandboxed coordinator, collector or gate runner would later execute, and could move other branches. Do not adopt either version's writer roots.
