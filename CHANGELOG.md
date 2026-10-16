@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.3
 
 - Dashboard: each "Needs a human" act (the owner's inbox and the per-increment "Needs you" lists) is now a fold. The summary keeps the short act; expanding it shows the full act with its unblocks, urgency and added date. Slice ids in acts and slice task/dependency lines link to that slice's card (cards carry `id="s-<slice>"`); a link to a card not on the page falls back to plain text. Markdown links in acts resolve to the repository file, relative to the state directory: page-relative by default, or under the new optional `SW_DASHBOARD_LINK_BASE` (repository root URL) so a published page can point at the hosted repository.
 
